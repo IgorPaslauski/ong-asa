@@ -28,8 +28,8 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card anim-in">
         <div className="brand-mark">ASA</div>
-        <h1>Painel da equipe</h1>
-        <p className="muted">Acesse o sistema de cadastros e relatórios.</p>
+        <h1>Sistema operacional</h1>
+        <p className="muted">Dashboard, cadastros e prestação de contas da equipe.</p>
         <div className="hint">
           Demo: <strong>admin@ongasa.org.br</strong> / <strong>asa2025</strong>
           <br />

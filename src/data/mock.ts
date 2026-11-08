@@ -325,10 +325,24 @@ export const INITIAL_ACTIVITIES: Activity[] = [
   },
   {
     id: 'a3',
+    titulo: 'Campanha Dia das Crianças',
+    data: '2026-10-01',
+    tipo: 'Eventos',
+    participantes: 120,
+  },
+  {
+    id: 'a4',
     titulo: 'Oficina de artes com voluntários',
     data: '2026-09-30',
     tipo: 'Cultura',
     participantes: 18,
+  },
+  {
+    id: 'a5',
+    titulo: 'Atualização cadastral familiar',
+    data: '2026-08-05',
+    tipo: 'Gestão',
+    participantes: 37,
   },
 ]
 

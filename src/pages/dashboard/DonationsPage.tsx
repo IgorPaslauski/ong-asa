@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import Modal from '../../components/Modal'
+import Drawer from '../../components/Drawer'
 import {
   DONATION_STATUS_LABEL,
   DONATION_TYPE_LABEL,
@@ -29,24 +29,36 @@ export default function DonationsPage() {
   const [items, setItems] = useState<Donation[]>(() => getDonations())
   const [query, setQuery] = useState('')
   const [tipo, setTipo] = useState<'todos' | DonationType>('todos')
+  const [status, setStatus] = useState<'todos' | DonationStatus>('todos')
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Donation | null>(null)
   const [form, setForm] = useState(emptyForm)
 
+  const totals = useMemo(() => {
+    const confirmed = items.filter((d) => d.status === 'confirmada')
+    return {
+      count: items.length,
+      confirmed: confirmed.length,
+      pending: items.filter((d) => d.status === 'pendente').length,
+      amount: confirmed.reduce((s, d) => s + d.valor, 0),
+    }
+  }, [items])
+
   const filtered = useMemo(() => {
     return items
       .filter((d) => {
-        const q = query.toLowerCase()
+        const q = query.toLowerCase().trim()
         const matchQ =
           !q ||
           d.doadorNome.toLowerCase().includes(q) ||
           d.descricao.toLowerCase().includes(q) ||
           d.destinacao.toLowerCase().includes(q)
         const matchT = tipo === 'todos' || d.tipo === tipo
-        return matchQ && matchT
+        const matchS = status === 'todos' || d.status === status
+        return matchQ && matchT && matchS
       })
       .sort((a, b) => b.data.localeCompare(a.data))
-  }, [items, query, tipo])
+  }, [items, query, tipo, status])
 
   function persist(next: Donation[]) {
     setItems(next)
@@ -94,19 +106,86 @@ export default function DonationsPage() {
     persist(items.filter((d) => d.id !== id))
   }
 
+  function setDonationStatus(id: string, next: DonationStatus) {
+    persist(items.map((d) => (d.id === id ? { ...d, status: next } : d)))
+  }
+
   return (
-    <div>
-      <header className="dash-header">
+    <div className="dash-page">
+      <div className="registry-head">
         <div>
-          <h1>Doações</h1>
-          <p>Registro de contribuições financeiras e em espécie.</p>
+          <p className="eyebrow">Financeiro</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', color: 'var(--brand)', fontSize: 'clamp(1.55rem, 3vw, 2rem)', margin: 0 }}>
+            Doações
+          </h1>
+          <p className="muted">
+            {formatCurrency(totals.amount)} confirmados · {totals.pending} pendente(s)
+          </p>
         </div>
         <button className="btn btn-dark btn-sm" type="button" onClick={openCreate}>
-          Nova doação
+          + Nova doação
         </button>
-      </header>
+      </div>
 
-      <div className="toolbar">
+      <div className="metric-grid" style={{ marginBottom: '0.25rem' }}>
+        <article className="metric-card">
+          <div className="metric-top"><span>Total lançamentos</span></div>
+          <strong>{totals.count}</strong>
+          <em>{totals.confirmed} confirmadas</em>
+        </article>
+        <article className="metric-card">
+          <div className="metric-top"><span>Volume confirmado</span></div>
+          <strong style={{ fontSize: '1.35rem' }}>{formatCurrency(totals.amount)}</strong>
+          <em>soma financeira + espécie</em>
+        </article>
+        <article className="metric-card">
+          <div className="metric-top"><span>Pendências</span></div>
+          <strong>{totals.pending}</strong>
+          <em>aguardando conciliação</em>
+        </article>
+        <article className="metric-card">
+          <div className="metric-top"><span>Filtro atual</span></div>
+          <strong style={{ fontSize: '1.35rem' }}>{filtered.length}</strong>
+          <em>visíveis na tabela</em>
+        </article>
+      </div>
+
+      <div className="chip-row">
+        <button type="button" className={`chip${tipo === 'todos' ? ' is-on' : ''}`} onClick={() => setTipo('todos')}>
+          Todos os tipos
+        </button>
+        {(Object.keys(DONATION_TYPE_LABEL) as DonationType[]).map((k) => (
+          <button
+            key={k}
+            type="button"
+            className={`chip${tipo === k ? ' is-on' : ''}`}
+            onClick={() => setTipo(k)}
+          >
+            {DONATION_TYPE_LABEL[k]}
+          </button>
+        ))}
+      </div>
+      <div className="chip-row">
+        {(
+          [
+            ['todos', 'Todos status'],
+            ['confirmada', 'Confirmadas'],
+            ['pendente', 'Pendentes'],
+            ['cancelada', 'Canceladas'],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`chip${status === key ? ' is-on' : ''}`}
+            onClick={() => setStatus(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="toolbar smart">
         <div className="field">
           <label htmlFor="dq">Buscar</label>
           <input
@@ -115,21 +194,6 @@ export default function DonationsPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-        </div>
-        <div className="field" style={{ maxWidth: 220 }}>
-          <label htmlFor="tipo">Tipo</label>
-          <select
-            id="tipo"
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value as typeof tipo)}
-          >
-            <option value="todos">Todos</option>
-            {(Object.keys(DONATION_TYPE_LABEL) as DonationType[]).map((k) => (
-              <option key={k} value={k}>
-                {DONATION_TYPE_LABEL[k]}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 
@@ -143,7 +207,7 @@ export default function DonationsPage() {
               <th>Valor</th>
               <th>Destinação</th>
               <th>Status</th>
-              <th></th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -152,25 +216,29 @@ export default function DonationsPage() {
                 <td>{formatDate(d.data)}</td>
                 <td>
                   <strong>{d.doadorNome}</strong>
-                  <div className="muted" style={{ fontSize: '0.8rem' }}>
-                    {d.descricao}
-                  </div>
+                  <div className="muted tiny">{d.descricao}</div>
                 </td>
                 <td>{DONATION_TYPE_LABEL[d.tipo]}</td>
                 <td>{d.valor ? formatCurrency(d.valor) : '—'}</td>
                 <td>{d.destinacao}</td>
                 <td>
-                  <span
-                    className={`badge ${
-                      d.status === 'confirmada'
-                        ? 'badge-ok'
-                        : d.status === 'pendente'
-                          ? 'badge-warn'
-                          : 'badge-danger'
-                    }`}
+                  <select
+                    aria-label={`Status da doação ${d.id}`}
+                    value={d.status}
+                    onChange={(e) => setDonationStatus(d.id, e.target.value as DonationStatus)}
+                    style={{
+                      border: '1px solid var(--line)',
+                      borderRadius: 10,
+                      padding: '0.35rem 0.5rem',
+                      background: '#fff',
+                    }}
                   >
-                    {DONATION_STATUS_LABEL[d.status]}
-                  </span>
+                    {(Object.keys(DONATION_STATUS_LABEL) as DonationStatus[]).map((s) => (
+                      <option key={s} value={s}>
+                        {DONATION_STATUS_LABEL[s]}
+                      </option>
+                    ))}
+                  </select>
                 </td>
                 <td>
                   <div className="row-actions">
@@ -190,7 +258,11 @@ export default function DonationsPage() {
       </div>
 
       {open ? (
-        <Modal title={editing ? 'Editar doação' : 'Nova doação'} onClose={() => setOpen(false)}>
+        <Drawer
+          title={editing ? 'Editar doação' : 'Nova doação'}
+          subtitle="Registre valor, tipo e destinação em um fluxo único."
+          onClose={() => setOpen(false)}
+        >
           <form className="form-grid two" onSubmit={onSubmit}>
             <div className="field" style={{ gridColumn: '1 / -1' }}>
               <label>Doador / parceiro</label>
@@ -257,9 +329,18 @@ export default function DonationsPage() {
             <div className="field" style={{ gridColumn: '1 / -1' }}>
               <label>Destinação</label>
               <input
+                list="destinos"
                 value={form.destinacao}
                 onChange={(e) => setForm({ ...form, destinacao: e.target.value })}
               />
+              <datalist id="destinos">
+                <option value="Reforço escolar" />
+                <option value="Famílias acolhidas" />
+                <option value="Apadrinhamento" />
+                <option value="Eventos" />
+                <option value="Kit vestuário" />
+                <option value="Geral" />
+              </datalist>
             </div>
             <div className="field" style={{ gridColumn: '1 / -1' }}>
               <label>Descrição</label>
@@ -274,11 +355,11 @@ export default function DonationsPage() {
                 Cancelar
               </button>
               <button className="btn btn-dark" type="submit">
-                Salvar
+                Salvar doação
               </button>
             </div>
           </form>
-        </Modal>
+        </Drawer>
       ) : null}
     </div>
   )

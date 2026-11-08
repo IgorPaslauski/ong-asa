@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import Modal from '../../components/Modal'
+import Drawer from '../../components/Drawer'
 import {
   ROLE_LABEL,
   type Helper,
@@ -24,22 +24,36 @@ export default function HelpersPage() {
   const [items, setItems] = useState<Helper[]>(() => getHelpers())
   const [query, setQuery] = useState('')
   const [papel, setPapel] = useState<'todos' | HelperRole>('todos')
+  const [onlyActive, setOnlyActive] = useState(false)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Helper | null>(null)
   const [form, setForm] = useState(emptyForm)
 
+  const counts = useMemo(() => {
+    const base: Record<string, number> = {
+      todos: items.length,
+      voluntario: 0,
+      doador: 0,
+      padrinho: 0,
+      parceiro: 0,
+    }
+    for (const h of items) base[h.papel] += 1
+    return base
+  }, [items])
+
   const filtered = useMemo(() => {
     return items.filter((h) => {
-      const q = query.toLowerCase()
+      const q = query.toLowerCase().trim()
       const matchQ =
         !q ||
         h.nome.toLowerCase().includes(q) ||
         h.email.toLowerCase().includes(q) ||
         h.cidade.toLowerCase().includes(q)
       const matchP = papel === 'todos' || h.papel === papel
-      return matchQ && matchP
+      const matchA = !onlyActive || h.ativo
+      return matchQ && matchP && matchA
     })
-  }, [items, query, papel])
+  }, [items, query, papel, onlyActive])
 
   function persist(next: Helper[]) {
     setItems(next)
@@ -81,19 +95,55 @@ export default function HelpersPage() {
     persist(items.filter((h) => h.id !== id))
   }
 
+  function toggleActive(id: string) {
+    persist(items.map((h) => (h.id === id ? { ...h, ativo: !h.ativo } : h)))
+  }
+
   return (
-    <div>
-      <header className="dash-header">
+    <div className="dash-page">
+      <div className="registry-head">
         <div>
-          <h1>Quem ajuda</h1>
-          <p>Voluntários, doadores, padrinhos e parceiros da rede ASA.</p>
+          <p className="eyebrow">Cadastros</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', color: 'var(--brand)', fontSize: 'clamp(1.55rem, 3vw, 2rem)', margin: 0 }}>
+            Quem ajuda
+          </h1>
+          <p className="muted">Voluntários, doadores, padrinhos e parceiros — com ativação rápida.</p>
         </div>
         <button className="btn btn-dark btn-sm" type="button" onClick={openCreate}>
-          Nova pessoa
+          + Nova pessoa
         </button>
-      </header>
+      </div>
 
-      <div className="toolbar">
+      <div className="chip-row">
+        {(
+          [
+            ['todos', 'Todos'],
+            ['voluntario', 'Voluntários'],
+            ['doador', 'Doadores'],
+            ['padrinho', 'Padrinhos'],
+            ['parceiro', 'Parceiros'],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`chip${papel === key ? ' is-on' : ''}`}
+            onClick={() => setPapel(key)}
+          >
+            {label}
+            <span className="count">{counts[key]}</span>
+          </button>
+        ))}
+        <button
+          type="button"
+          className={`chip${onlyActive ? ' is-on' : ''}`}
+          onClick={() => setOnlyActive((v) => !v)}
+        >
+          Só ativos
+        </button>
+      </div>
+
+      <div className="toolbar smart">
         <div className="field">
           <label htmlFor="hq">Buscar</label>
           <input
@@ -103,20 +153,12 @@ export default function HelpersPage() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <div className="field" style={{ maxWidth: 220 }}>
-          <label htmlFor="papel">Papel</label>
-          <select
-            id="papel"
-            value={papel}
-            onChange={(e) => setPapel(e.target.value as typeof papel)}
-          >
-            <option value="todos">Todos</option>
-            <option value="voluntario">Voluntário</option>
-            <option value="doador">Doador</option>
-            <option value="padrinho">Padrinho/Madrinha</option>
-            <option value="parceiro">Parceiro</option>
-          </select>
-        </div>
+      </div>
+
+      <div className="result-meta">
+        <span>
+          {filtered.length} resultado{filtered.length === 1 ? '' : 's'}
+        </span>
       </div>
 
       <div className="table-wrap">
@@ -128,7 +170,7 @@ export default function HelpersPage() {
               <th>Contato</th>
               <th>Desde</th>
               <th>Situação</th>
-              <th></th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -136,22 +178,23 @@ export default function HelpersPage() {
               <tr key={h.id}>
                 <td>
                   <strong>{h.nome}</strong>
-                  <div className="muted" style={{ fontSize: '0.8rem' }}>
-                    {h.cidade}
-                  </div>
+                  <div className="muted tiny">{h.cidade}</div>
                 </td>
                 <td>{ROLE_LABEL[h.papel]}</td>
                 <td>
                   {h.email}
-                  <div className="muted" style={{ fontSize: '0.8rem' }}>
-                    {h.telefone}
-                  </div>
+                  <div className="muted tiny">{h.telefone}</div>
                 </td>
                 <td>{formatDate(h.desde)}</td>
                 <td>
-                  <span className={`badge ${h.ativo ? 'badge-ok' : 'badge-muted'}`}>
+                  <button
+                    type="button"
+                    className={`badge ${h.ativo ? 'badge-ok' : 'badge-muted'}`}
+                    onClick={() => toggleActive(h.id)}
+                    title="Clique para alternar"
+                  >
                     {h.ativo ? 'Ativo' : 'Inativo'}
-                  </span>
+                  </button>
                 </td>
                 <td>
                   <div className="row-actions">
@@ -171,12 +214,17 @@ export default function HelpersPage() {
       </div>
 
       {open ? (
-        <Modal title={editing ? 'Editar pessoa' : 'Nova pessoa'} onClose={() => setOpen(false)}>
+        <Drawer
+          title={editing ? 'Editar pessoa' : 'Nova pessoa'}
+          subtitle="Cadastro unificado da rede de apoio."
+          onClose={() => setOpen(false)}
+        >
           <form className="form-grid two" onSubmit={onSubmit}>
             <div className="field" style={{ gridColumn: '1 / -1' }}>
               <label>Nome</label>
               <input
                 required
+                autoFocus
                 value={form.nome}
                 onChange={(e) => setForm({ ...form, nome: e.target.value })}
               />
@@ -243,7 +291,7 @@ export default function HelpersPage() {
               </button>
             </div>
           </form>
-        </Modal>
+        </Drawer>
       ) : null}
     </div>
   )

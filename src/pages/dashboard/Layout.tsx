@@ -3,7 +3,7 @@ import { currentUserEmail, isAuthenticated, logout } from '../../lib/storage'
 import '../../styles/dashboard.css'
 
 const links = [
-  { to: '/painel/visao-geral', label: 'Visão geral', end: true },
+  { to: '/painel/visao-geral', label: 'Dashboard', end: true },
   { to: '/painel/criancas', label: 'Crianças' },
   { to: '/painel/pessoas', label: 'Quem ajuda' },
   { to: '/painel/doacoes', label: 'Doações' },

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import Modal from '../../components/Modal'
+import Drawer from '../../components/Drawer'
 import {
   STATUS_LABEL,
   type Child,
@@ -30,16 +30,22 @@ export default function ChildrenPage() {
   const [editing, setEditing] = useState<Child | null>(null)
   const [form, setForm] = useState(emptyForm)
 
+  const counts = useMemo(() => {
+    const base = { todos: items.length, ativo: 0, acompanhamento: 0, concluido: 0 }
+    for (const c of items) base[c.status] += 1
+    return base
+  }, [items])
+
   const filtered = useMemo(() => {
     return items.filter((c) => {
-      const q = query.toLowerCase()
+      const q = query.toLowerCase().trim()
       const matchQ =
         !q ||
         c.nome.toLowerCase().includes(q) ||
         c.responsavel.toLowerCase().includes(q) ||
-        c.bairro.toLowerCase().includes(q)
-      const matchS = status === 'todos' || c.status === status
-      return matchQ && matchS
+        c.bairro.toLowerCase().includes(q) ||
+        c.escola.toLowerCase().includes(q)
+      return matchQ && (status === 'todos' || c.status === status)
     })
   }, [items, query, status])
 
@@ -85,41 +91,66 @@ export default function ChildrenPage() {
     persist(items.filter((c) => c.id !== id))
   }
 
+  function quickStatus(id: string, next: ChildStatus) {
+    persist(items.map((c) => (c.id === id ? { ...c, status: next } : c)))
+  }
+
   return (
-    <div>
-      <header className="dash-header">
+    <div className="dash-page">
+      <div className="registry-head">
         <div>
-          <h1>Crianças</h1>
-          <p>Cadastro e acompanhamento das crianças acolhidas pela ASA.</p>
+          <p className="eyebrow">Cadastros</p>
+          <h1 className="dash-header" style={{ margin: 0 }}>
+            <span style={{ fontFamily: 'var(--font-display)', color: 'var(--brand)', fontSize: 'clamp(1.55rem, 3vw, 2rem)' }}>
+              Crianças
+            </span>
+          </h1>
+          <p className="muted">Busca rápida, filtros por status e edição em painel lateral.</p>
         </div>
         <button className="btn btn-dark btn-sm" type="button" onClick={openCreate}>
-          Nova criança
+          + Nova criança
         </button>
-      </header>
+      </div>
 
-      <div className="toolbar">
+      <div className="chip-row">
+        {(
+          [
+            ['todos', 'Todas'],
+            ['ativo', 'Ativas'],
+            ['acompanhamento', 'Acompanhamento'],
+            ['concluido', 'Concluídas'],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`chip${status === key ? ' is-on' : ''}`}
+            onClick={() => setStatus(key)}
+          >
+            {label}
+            <span className="count">{counts[key]}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="toolbar smart">
         <div className="field">
           <label htmlFor="q">Buscar</label>
           <input
             id="q"
-            placeholder="Nome, responsável ou bairro"
+            placeholder="Nome, responsável, bairro ou escola"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            autoFocus
           />
         </div>
-        <div className="field" style={{ maxWidth: 220 }}>
-          <label htmlFor="status">Status</label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value as typeof status)}
-          >
-            <option value="todos">Todos</option>
-            <option value="ativo">Ativo</option>
-            <option value="acompanhamento">Em acompanhamento</option>
-            <option value="concluido">Concluído</option>
-          </select>
-        </div>
+      </div>
+
+      <div className="result-meta">
+        <span>
+          {filtered.length} resultado{filtered.length === 1 ? '' : 's'}
+        </span>
+        <span>Dica: use os chips para filtrar sem abrir menus</span>
       </div>
 
       <div className="table-wrap">
@@ -132,7 +163,7 @@ export default function ChildrenPage() {
               <th>Bairro</th>
               <th>Entrada</th>
               <th>Status</th>
-              <th></th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -140,31 +171,33 @@ export default function ChildrenPage() {
               <tr key={c.id}>
                 <td>
                   <strong>{c.nome}</strong>
-                  <div className="muted" style={{ fontSize: '0.8rem' }}>
-                    {c.escola}
-                  </div>
+                  <div className="muted tiny">{c.escola}</div>
                 </td>
                 <td>{c.idade}</td>
                 <td>
                   {c.responsavel}
-                  <div className="muted" style={{ fontSize: '0.8rem' }}>
-                    {c.telefone}
-                  </div>
+                  <div className="muted tiny">{c.telefone}</div>
                 </td>
                 <td>{c.bairro}</td>
                 <td>{formatDate(c.dataEntrada)}</td>
                 <td>
-                  <span
-                    className={`badge ${
-                      c.status === 'ativo'
-                        ? 'badge-ok'
-                        : c.status === 'acompanhamento'
-                          ? 'badge-warn'
-                          : 'badge-muted'
-                    }`}
+                  <select
+                    aria-label={`Status de ${c.nome}`}
+                    value={c.status}
+                    onChange={(e) => quickStatus(c.id, e.target.value as ChildStatus)}
+                    style={{
+                      border: '1px solid var(--line)',
+                      borderRadius: 10,
+                      padding: '0.35rem 0.5rem',
+                      background: '#fff',
+                    }}
                   >
-                    {STATUS_LABEL[c.status]}
-                  </span>
+                    {(Object.keys(STATUS_LABEL) as ChildStatus[]).map((s) => (
+                      <option key={s} value={s}>
+                        {STATUS_LABEL[s]}
+                      </option>
+                    ))}
+                  </select>
                 </td>
                 <td>
                   <div className="row-actions">
@@ -184,12 +217,17 @@ export default function ChildrenPage() {
       </div>
 
       {open ? (
-        <Modal title={editing ? 'Editar criança' : 'Nova criança'} onClose={() => setOpen(false)}>
+        <Drawer
+          title={editing ? 'Editar criança' : 'Nova criança'}
+          subtitle="Campos essenciais primeiro — salve e continue cadastrando."
+          onClose={() => setOpen(false)}
+        >
           <form className="form-grid two" onSubmit={onSubmit}>
             <div className="field" style={{ gridColumn: '1 / -1' }}>
-              <label>Nome</label>
+              <label>Nome completo</label>
               <input
                 required
+                autoFocus
                 value={form.nome}
                 onChange={(e) => setForm({ ...form, nome: e.target.value })}
               />
@@ -266,11 +304,11 @@ export default function ChildrenPage() {
                 Cancelar
               </button>
               <button className="btn btn-dark" type="submit">
-                Salvar
+                Salvar cadastro
               </button>
             </div>
           </form>
-        </Modal>
+        </Drawer>
       ) : null}
     </div>
   )

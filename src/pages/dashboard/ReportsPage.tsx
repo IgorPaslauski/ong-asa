@@ -95,8 +95,9 @@ export default function ReportsPage() {
     <div>
       <header className="dash-header">
         <div>
+          <p className="eyebrow">Prestação de contas</p>
           <h1>Relatórios</h1>
-          <p>Resumo de doações e controles gerais para apresentação.</p>
+          <p>Leitura clara de doações, cadastros e destinações — no estilo de indicadores públicos.</p>
         </div>
         <div className="row-actions">
           <button className="btn btn-ghost-dark btn-sm" type="button" onClick={exportCsv}>
