@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import logoUrl from '@/assets/logo-asa.png'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ArrowLeftIcon, Loader2Icon } from 'lucide-react'
 import { Alert, AlertDescription } from '@/admin/components/ui/alert'
@@ -40,7 +41,7 @@ export default function LoginPage() {
     <div className="admin-root grid min-h-dvh place-items-center bg-background px-4 py-10">
       <main className="w-full max-w-sm">
         <div className="mb-6 flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-md bg-primary text-xs font-bold tracking-wide text-primary-foreground">ASA</span>
+          <img src={logoUrl} alt="" aria-hidden="true" width={48} height={48} className="size-12 rounded-full" />
           <div className="leading-tight">
             <h1 className="text-lg font-semibold">Sistema administrativo</h1>
             <p className="text-[13px] text-muted-foreground">Instituto A.S.A. · Condor/RS</p>

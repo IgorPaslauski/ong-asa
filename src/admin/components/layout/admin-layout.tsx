@@ -17,12 +17,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/admi
 import { usePersistentState, useMediaQuery } from '@/admin/lib/hooks'
 import { cn } from '@/admin/lib/utils'
 import { currentUserEmail, isAuthenticated, logout } from '@/lib/storage'
+import logoUrl from '@/assets/logo-asa.png'
 import { NAV } from './nav'
 
 function Brand({ collapsed }: { collapsed?: boolean }) {
   return (
     <Link to="/painel/visao-geral" className="flex items-center gap-2.5 rounded-md px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring">
-      <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md bg-primary text-[11px] font-bold tracking-wide text-primary-foreground">ASA</span>
+      <img src={logoUrl} alt="" aria-hidden="true" width={36} height={36} className="size-9 shrink-0 rounded-full" />
       {collapsed ? <span className="sr-only">Instituto A.S.A. — Dashboard</span> : (
         <span className="min-w-0 leading-tight">
           <span className="block truncate text-sm font-semibold">Instituto A.S.A.</span>

@@ -4,9 +4,9 @@
    ========================================================== */
 :root {
   /* Cor — marca */
-  --brand: #183c30;
-  --brand-2: #30483c;
-  --brand-deep: #0f2a20;
+  --brand: #0b3a94;
+  --brand-2: #1a56b8;
+  --brand-deep: #0a2a6b;
   --accent: #e5b546;
   --accent-soft: #f4dfa3;
   --terracotta: #c97253;
@@ -16,10 +16,10 @@
   --bg: #f8f5ec;
   --bg-deep: #ece6d6;
   --surface: #fffdf8;
-  --ink: #17251e;
-  --ink-soft: #3e4f46;
-  --muted: #5a6a61;
-  --line: rgba(24, 60, 48, 0.14);
+  --ink: #141c2e;
+  --ink-soft: #37445c;
+  --muted: #566177;
+  --line: rgba(11, 58, 148, 0.14);
   --rule: #ddd5c0;
 
   /* Cor — semântica */
@@ -53,8 +53,8 @@
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgba(15, 42, 32, 0.06);
-  --shadow: 0 12px 32px rgba(15, 42, 32, 0.1);
+  --shadow-sm: 0 1px 2px rgba(10, 24, 60, 0.06);
+  --shadow: 0 12px 32px rgba(10, 24, 60, 0.1);
   --shadow-md: var(--shadow);
 
   /* Container */
@@ -233,18 +233,18 @@ p {
 .btn-ghost-dark {
   background: transparent;
   color: var(--brand);
-  border: 1px solid rgba(22, 58, 44, 0.25);
+  border: 1px solid rgba(11, 58, 148, 0.25);
 }
 
 .btn-ghost-dark:hover {
-  background: rgba(22, 58, 44, 0.06);
+  background: rgba(11, 58, 148, 0.06);
   border-color: var(--brand);
 }
 
 .btn-dark {
   background: var(--brand);
-  color: #f4f7f2;
-  box-shadow: 0 8px 20px rgba(22, 58, 44, 0.22);
+  color: #f3f6fb;
+  box-shadow: 0 8px 20px rgba(11, 58, 148, 0.22);
 }
 
 .btn-dark:hover {
@@ -320,7 +320,7 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
-  background: #f3f7f4;
+  background: #f3f6fb;
 }
 
 tbody tr {
@@ -328,7 +328,7 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: #f6faf7;
+  background: #f6f9fc;
 }
 
 tr:last-child td {
@@ -347,7 +347,7 @@ tr:last-child td {
 }
 
 .badge-ok {
-  background: #dff0e6;
+  background: #dce9f5;
   color: var(--ok);
 }
 
@@ -357,7 +357,7 @@ tr:last-child td {
 }
 
 .badge-muted {
-  background: #ecefec;
+  background: #eceff4;
   color: var(--muted);
 }
 
@@ -450,7 +450,7 @@ tr:last-child td {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(14, 42, 32, 0.5);
+  background: rgba(10, 24, 60, 0.5);
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -585,7 +585,7 @@ tr:last-child td {
 .bar-list-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand), #2f6a52);
+  background: linear-gradient(90deg, var(--brand), #2a76c9);
 }
 
 .bar-list-fill.is-accent {
@@ -633,7 +633,7 @@ tr:last-child td {
   width: 100%;
   max-width: 42px;
   border-radius: 10px 10px 4px 4px;
-  background: linear-gradient(180deg, #2f6a52, var(--brand));
+  background: linear-gradient(180deg, #2a76c9, var(--brand));
 }
 
 .col-chart-label {

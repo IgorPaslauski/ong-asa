@@ -12,6 +12,7 @@ import { useEnhancedMotion } from '../hooks/useMotion'
 import { ACTIONS_TIMELINE } from '../data/impact'
 import { ORG, PUBLIC_NOTES } from '../data/org'
 import { formatCurrency, formatDate } from '../data/mock'
+import logoUrl from '../assets/logo-asa.png'
 import { whatsapp } from '../lib/contact'
 import { buildLandingPublicModel } from '../lib/publicStats'
 import { formatEventTime, getPublicEvents } from '../lib/publicEvents'
@@ -361,7 +362,7 @@ export default function Landing() {
       <footer className="site-footer on-dark">
         <div className="container footer-grid">
           <div>
-            <p className="footer-brand">{ORG.shortName}</p>
+            <img className="footer-logo" src={logoUrl} alt="Instituto A.S.A. — Semeando o Amanhã" width={96} height={96} loading="lazy" />
             <p>
               {ORG.name} — {ORG.legalName}
             </p>

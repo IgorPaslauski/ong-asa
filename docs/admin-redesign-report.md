@@ -115,3 +115,11 @@ npm run screenshots            # regenera docs/screenshots
 - Atualização na landing é imediata na mesma aba e nas demais abas do mesmo navegador (evento `asa:data-changed` / `storage`).
 - **Limitação:** sem backend, a "sincronização" vale só dentro do mesmo navegador. Visitantes do site em outros dispositivos só verão os eventos quando houver um servidor/API para guardar os dados.
 - A leitura dos dados do painel agora é tolerante a registros incompletos, e há um error boundary por tela.
+
+## Adendo: identidade visual (logo e cores)
+
+- A logo do Instituto (`src/assets/logo-asa.png`, também usada como favicon) aparece no menu lateral e no login do painel, e no cabeçalho e rodapé do site. Por ser circular com fundo branco, é exibida em círculo e funciona sobre qualquer fundo.
+- Paleta extraída da logo: azul-marinho (~#0B3A94), azul (~#2F7BE0) e verde-azulado (~#2A98A9).
+  - **Painel:** cor primária azul-marinho. Nos gráficos, dinheiro recebido = azul-marinho e bens/serviços (estimativa) = verde-azulado (antes: verde e azul). O significado de cada cor continua fixo em todas as telas.
+  - **Site:** os verdes de marca (hero, seções escuras, sombras, textos) passaram para a família azul-marinho. Mantive o dourado dos botões/destaques e a terracota dos gráficos como cores quentes de apoio.
+- Contraste revalidado: axe sem violações em 12 rotas.

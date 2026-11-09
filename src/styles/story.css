@@ -9,13 +9,13 @@
   --bg: #f8f8f5;
   --bg-deep: #eae7df;
   --surface: #fdfdfb;
-  --ink: #191c1a;
-  --ink-soft: #3a3f3c;
-  --muted: #5a605c;
-  --brand: #075544;
-  --brand-2: #0b6b56;
-  --brand-deep: #04382d;
-  --soft-green: #a4bdaa;
+  --ink: #161b27;
+  --ink-soft: #363e50;
+  --muted: #575f70;
+  --brand: #0b3a94;
+  --brand-2: #1a56b8;
+  --brand-deep: #0a2a6b;
+  --soft-green: #9cc9d4;
   --rule: #dcd9d0;
   --terracotta-ink: #8f4a2f;
 }
@@ -36,8 +36,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(8, 22, 16, 0.6) 0%, rgba(8, 22, 16, 0) 22%, rgba(8, 22, 16, 0) 45%, rgba(8, 22, 16, 0.78) 100%),
-    linear-gradient(90deg, rgba(8, 22, 16, 0.86) 0%, rgba(8, 22, 16, 0.62) 34%, rgba(8, 22, 16, 0.12) 62%, rgba(8, 22, 16, 0) 100%);
+    linear-gradient(180deg, rgba(6, 16, 42, 0.6) 0%, rgba(6, 16, 42, 0) 22%, rgba(6, 16, 42, 0) 45%, rgba(6, 16, 42, 0.78) 100%),
+    linear-gradient(90deg, rgba(6, 16, 42, 0.86) 0%, rgba(6, 16, 42, 0.62) 34%, rgba(6, 16, 42, 0.12) 62%, rgba(6, 16, 42, 0) 100%);
 }
 
 .hero-lede {
@@ -307,7 +307,7 @@
   inset: 0;
   aspect-ratio: auto;
   border-radius: 6px;
-  box-shadow: 0 24px 60px rgba(4, 56, 45, 0.22);
+  box-shadow: 0 24px 60px rgba(10, 42, 107, 0.22);
   will-change: transform, opacity;
 }
 
@@ -333,7 +333,7 @@
   display: block;
   height: 2px;
   margin-top: var(--space-6);
-  background: rgba(7, 85, 68, 0.18);
+  background: rgba(11, 58, 148, 0.18);
 }
 
 .activities-track.is-enhanced .stage-progress span {
@@ -493,5 +493,5 @@
   margin-top: -9vh;
   padding-top: calc(clamp(4rem, 10vw, 9rem) + 9vh);
   background: var(--bg);
-  box-shadow: 0 -24px 48px -32px rgba(4, 56, 45, 0.18);
+  box-shadow: 0 -24px 48px -32px rgba(10, 42, 107, 0.18);
 }

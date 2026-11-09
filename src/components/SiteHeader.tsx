@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import logoUrl from '../assets/logo-asa.png'
 import { ORG } from '../data/org'
 
 const SECTIONS = [
@@ -56,7 +57,7 @@ export default function SiteHeader() {
     <header className={`site-header${solid ? ' is-solid' : ' on-dark'}`}>
       <div className="container header-row">
         <a className="logo" href="#top" aria-label={`${ORG.shortName} — ${ORG.legalName}, início`}>
-          <span className="logo-mark">{ORG.shortName}</span>
+          <img className="logo-img" src={logoUrl} alt="" aria-hidden="true" width={44} height={44} />
           <span className="logo-name">{ORG.legalName}</span>
         </a>
 

@@ -52,35 +52,35 @@
 /* Tokens do admin: escopo `.admin-root`, nunca `:root` (o site usa :root). */
 .admin-root {
   --background: #f8f9fa;
-  --foreground: #18212b;
+  --foreground: #14203a;
   --card: #ffffff;
-  --card-foreground: #18212b;
+  --card-foreground: #14203a;
   --popover: #ffffff;
-  --popover-foreground: #18212b;
-  --primary: #116b56;
+  --popover-foreground: #14203a;
+  --primary: #0b3a94;
   --primary-foreground: #ffffff;
   --secondary: #f1f3f5;
   --secondary-foreground: #18212b;
   --muted: #f1f3f5;
   --muted-foreground: #5b6778; /* AA sobre #fff e #f8f9fa */
-  --accent: #eef2f4;
+  --accent: #edf2fa;
   --accent-foreground: #18212b;
   --destructive: #b3403f; /* variação do erro #C04D4D com contraste AA para texto */
   --destructive-foreground: #ffffff;
   --border: #e5e7eb;
   --input: #d5d9df;
-  --ring: #3978b6;
-  --info: #2f6aa3;
+  --ring: #2f7be0;
+  --info: #1f5fb8;
   --warning: #8a5a10;
-  --success: #0e5c49;
+  --success: #0e6a5c;
   --sidebar: #ffffff;
-  --sidebar-foreground: #18212b;
+  --sidebar-foreground: #14203a;
   --sidebar-border: #e5e7eb;
-  --sidebar-accent: #e8f1ee;
+  --sidebar-accent: #e6edfa;
 
   /* Paleta semântica de dados — mesmo significado em todas as telas */
-  --chart-1: #116b56; /* financeiro / confirmado / ativo */
-  --chart-2: #3978b6; /* bens e serviços (estimativa) */
+  --chart-1: #0b3a94; /* financeiro / confirmado / ativo (azul da marca) */
+  --chart-2: #2a98a9; /* bens e serviços (estimativa) — verde-azulado da marca */
   --chart-3: #d99626; /* pendente / atenção */
   --chart-4: #7a6a9e; /* complementar */
   --chart-5: #94a3b8; /* neutro / concluído / outros */

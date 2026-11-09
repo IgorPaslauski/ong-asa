@@ -558,7 +558,7 @@
 
 .actions-section .tone-0 { border-color: var(--accent); }
 .actions-section .tone-1 { border-color: #e39a7e; }
-.actions-section .tone-2 { border-color: #9cc7b0; }
+.actions-section .tone-2 { border-color: #9cc9d4; }
 
 .action--lead {
   grid-column: 1 / -1;
@@ -756,7 +756,7 @@
 
 /* ---------- Rodapé ---------- */
 .site-footer {
-  background: #0a1c15;
+  background: #06122e;
   color: rgba(255, 255, 255, 0.86);
   padding: var(--space-8) 0 var(--space-6);
 }
@@ -974,10 +974,10 @@
   .hero-shade {
     background: linear-gradient(
       180deg,
-      rgba(8, 22, 16, 0.6) 0%,
-      rgba(8, 22, 16, 0) 16%,
-      rgba(15, 42, 32, 0.05) 28%,
-      rgba(15, 42, 32, 0.9) 50%,
+      rgba(6, 16, 42, 0.6) 0%,
+      rgba(6, 16, 42, 0) 16%,
+      rgba(10, 24, 60, 0.05) 28%,
+      rgba(10, 24, 60, 0.9) 50%,
       var(--brand-deep) 60%
     );
   }
@@ -1005,4 +1005,20 @@
   .hero-lead {
     margin-bottom: var(--space-4);
   }
+}
+
+/* Logo do Instituto (imagem circular em fundo branco: legível sobre qualquer fundo) */
+.logo-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+}
+.footer-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #fff;
+  margin: 0 0 var(--space-3);
 }
