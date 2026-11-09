@@ -1,0 +1,138 @@
+/* ==========================================================
+   Suavização das cores do site
+   Mesma paleta da logo (azul-marinho + verde-azulado), mas com degradês,
+   brilhos leves, fundos com um toque de cor e transições entre as seções,
+   em vez de blocos chapados. Só muda aparência; nada de estrutura.
+   ========================================================== */
+
+.landing {
+  --navy-1: #1a4686;
+  --navy-2: #1c4f90;
+  --navy-3: #17457f;
+  --night-1: #11325f;
+  --night-2: #153f73;
+  --night-3: #175a7a;
+  --wash-blue: #f2f7fb;
+  --wash-teal: #eef6f7;
+  --fade-h: clamp(48px, 7vw, 96px);
+}
+
+/* ---------- Seções escuras: degradê calmo + brilhos suaves ---------- */
+.landing .actions-section {
+  --fade-to: var(--navy-1);
+  position: relative;
+  background:
+    radial-gradient(60% 45% at 88% 6%, rgba(79, 192, 207, 0.2), transparent 70%),
+    radial-gradient(55% 40% at 4% 94%, rgba(111, 168, 232, 0.16), transparent 70%),
+    linear-gradient(175deg, var(--navy-1) 0%, var(--navy-2) 52%, var(--navy-3) 100%);
+}
+
+.landing .help {
+  --fade-to: var(--night-1);
+  position: relative;
+  background:
+    radial-gradient(55% 45% at 10% 8%, rgba(79, 192, 207, 0.16), transparent 70%),
+    radial-gradient(50% 40% at 94% 96%, rgba(42, 152, 169, 0.24), transparent 70%),
+    linear-gradient(170deg, var(--night-1) 0%, var(--night-2) 55%, var(--night-3) 100%);
+}
+
+.landing .site-footer {
+  background: linear-gradient(180deg, var(--night-3) 0%, #0f2f5a 38%, #0a1f45 100%);
+}
+
+/* ---------- Transições entre seções (a cor "entra" aos poucos) ---------- */
+.landing .actions-section::before,
+.landing .help::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--fade-h));
+  height: var(--fade-h);
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, var(--fade-to));
+}
+
+.landing .actions-section::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--fade-h);
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--navy-3), transparent);
+}
+
+/* o conteúdo das seções vizinhas fica por cima dos degradês */
+.landing .impact > .container,
+.landing .join > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Seções claras: fundos com um toque de cor ---------- */
+.landing .impact {
+  background: linear-gradient(180deg, var(--wash-blue) 0%, var(--surface) 38%);
+  border-top-color: transparent;
+}
+
+.landing .join {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--wash-teal) 100%);
+}
+
+/* ---------- Gráficos do site: tons mais leves ---------- */
+.landing .bar-list-fill,
+.landing .bar-list-fill.is-accent {
+  background: linear-gradient(90deg, #1a4686, #4f93d6);
+}
+
+.landing .bar-list-fill.is-accent {
+  background: linear-gradient(90deg, #d9967b, #c97253);
+}
+
+.landing .col-chart-bar {
+  background: linear-gradient(180deg, #6aa6e6, #1f4f93);
+}
+
+.landing .year-switch button.is-on {
+  background: linear-gradient(180deg, #2a5fa8, #1a4686);
+}
+
+/* ---------- Botões e destaques: degradê discreto e transições lentas ---------- */
+.landing .btn,
+.landing .main-nav a,
+.landing .year-switch button,
+.landing .action {
+  transition:
+    background-color 0.45s ease,
+    color 0.35s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing .btn-primary,
+.landing .btn.btn-primary {
+  background-image: linear-gradient(180deg, #67cdd9, #47b8c8);
+  box-shadow: 0 6px 18px rgba(42, 152, 169, 0.25);
+}
+
+.landing .btn-primary:hover,
+.landing .btn.btn-primary:hover {
+  background-image: linear-gradient(180deg, #86dbe5, #5cc5d3);
+  box-shadow: 0 10px 26px rgba(42, 152, 169, 0.32);
+}
+
+.landing .actions-section .action:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing .btn,
+  .landing .main-nav a,
+  .landing .year-switch button,
+  .landing .action {
+    transition: none;
+  }
+}

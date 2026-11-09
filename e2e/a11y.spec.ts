@@ -26,3 +26,15 @@ test.describe('acessibilidade (axe, WCAG 2.x A/AA)', () => {
     })
   }
 })
+
+test('landing: contraste de cor (axe) após percorrer a página', async ({ page }) => {
+  await page.goto('/')
+  for (let y = 0; y < 14000; y += 600) {
+    await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' as ScrollBehavior }), y)
+    await page.waitForTimeout(120)
+  }
+  await page.waitForTimeout(800)
+  const results = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze()
+  const summary = results.violations.flatMap((v) => v.nodes.map((n) => `${n.target.join(' ')} :: ${(n.any[0]?.message ?? '').slice(0, 140)}`))
+  expect(summary).toEqual([])
+})
