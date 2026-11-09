@@ -1379,3 +1379,84 @@
   height: auto;
   border-radius: 6px;
 }
+
+/* ---------- Doação via Pix ---------- */
+.pix { padding-block: clamp(3.5rem, 8vw, 6rem); }
+.pix-card {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  padding: var(--space-5);
+  border: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--radius-sm);
+  max-width: 46rem;
+}
+.pix-qr {
+  width: 12rem;
+  height: 12rem;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+}
+.pix-info { display: grid; gap: var(--space-3); align-content: start; }
+.pix-info p { margin: 0; }
+.pix-amount { font-size: 1.75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pix-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.pix-code {
+  font-size: 0.75rem;
+  word-break: break-all;
+  max-height: 3.2rem;
+  overflow: hidden;
+  opacity: 0.7;
+}
+@media (max-width: 600px) {
+  .pix-card { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .pix-info { justify-items: center; }
+}
+
+/* ---------- Prestação de contas ---------- */
+.accounts { padding-block: clamp(3.5rem, 8vw, 6rem); }
+.accounts-year { display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: var(--space-4); }
+.accounts-year select { font: inherit; padding: 0.4rem 0.6rem; min-height: 44px; }
+.accounts-totals {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  margin: 0 0 var(--space-5);
+}
+.accounts-totals > div {
+  padding: var(--space-4);
+  border: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--radius-sm);
+}
+.accounts-totals dt { font-size: 0.9rem; opacity: 0.8; }
+.accounts-totals dd { margin: 0.25rem 0 0; font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.accounts-cats h3 { margin: 0 0 var(--space-3); }
+.accounts-note { margin-top: var(--space-4); font-size: 0.85rem; opacity: 0.75; }
+
+/* ---------- Gráfico de linhas por ano ---------- */
+.accounts-evolution { margin-block: var(--space-5); }
+.accounts-evolution h3 { margin: 0 0 var(--space-3); }
+.accounts-controls { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3); }
+.seg { display: inline-flex; border: 1px solid currentColor; border-color: color-mix(in srgb, currentColor 30%, transparent); border-radius: 999px; overflow: hidden; }
+.seg button {
+  font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer;
+  min-height: 44px; padding: 0 1rem;
+}
+.seg button[aria-pressed="true"] { background: #0b3a94; color: #fff; }
+.seg button:focus-visible { outline: 3px solid #2f7be0; outline-offset: -3px; }
+.year-lines { margin: 0; }
+.year-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0 0 var(--space-2); padding: 0; }
+.year-legend li { display: inline-flex; align-items: center; gap: 0.4rem; font-variant-numeric: tabular-nums; }
+.year-swatch { width: 1.1rem; height: 0.3rem; border-radius: 2px; display: inline-block; }
+.year-svg { width: 100%; height: auto; display: block; }
+.year-table { margin-top: var(--space-3); }
+.year-table summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.year-table-scroll { overflow-x: auto; }
+.year-table table { border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; min-width: 100%; }
+.year-table caption { text-align: left; padding-bottom: 0.4rem; opacity: 0.75; }
+.year-table th, .year-table td { padding: 0.35rem 0.6rem; text-align: right; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); white-space: nowrap; }
+.year-table th[scope="row"], .year-table thead th:first-child { text-align: left; }

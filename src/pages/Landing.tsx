@@ -5,6 +5,8 @@ import Reveal from '../components/Reveal'
 import SiteHeader from '../components/SiteHeader'
 import CampaignsSection from '../components/CampaignsSection'
 import VolunteerSection from '../components/VolunteerSection'
+import PixDonation from '../components/PixDonation'
+import TransparencySection from '../components/TransparencySection'
 import ActivitiesStory from '../components/story/ActivitiesStory'
 import AboutStory from '../components/story/AboutStory'
 import HelpStory from '../components/story/HelpStory'
@@ -366,6 +368,12 @@ export default function Landing() {
 
         {/* 7. Como ajudar */}
         <HelpStory />
+
+        {/* 7b. Doação via Pix */}
+        <PixDonation />
+
+        {/* 7c. Prestação de contas */}
+        <TransparencySection />
 
         {/* 8. Candidatura de voluntário */}
         <VolunteerSection />

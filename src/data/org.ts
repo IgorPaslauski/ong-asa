@@ -60,3 +60,12 @@ export const PUBLIC_NOTES = {
   volunteersSupport: 10,
   sourcesLabel: 'Dados públicos e relatos institucionais — números do painel são ilustrativos do MVP.',
 }
+
+/** Doação via Pix. ATENÇÃO: confirme a chave com a associação antes de divulgar (aqui: CNPJ). */
+export const PIX = {
+  key: '34711182000120',
+  keyLabel: 'CNPJ 34.711.182/0001-20',
+  amount: 50,
+  receiver: 'Associação Semeando o Amanhã',
+  city: 'Condor',
+}
