@@ -98,7 +98,7 @@
 }
 
 .landing .btn-primary:hover {
-  background: #f0c562;
+  background: #7fd6e0;
 }
 
 .btn-outline-light {
@@ -209,7 +209,7 @@
 
 .main-nav .nav-cta:hover,
 .main-nav .nav-cta[aria-current='true'] {
-  background: #f0c562;
+  background: #7fd6e0;
 }
 
 .main-nav .nav-team a {

@@ -121,5 +121,5 @@ npm run screenshots            # regenera docs/screenshots
 - A logo do Instituto (`src/assets/logo-asa.png`, também usada como favicon) aparece no menu lateral e no login do painel, e no cabeçalho e rodapé do site. Por ser circular com fundo branco, é exibida em círculo e funciona sobre qualquer fundo.
 - Paleta extraída da logo: azul-marinho (~#0B3A94), azul (~#2F7BE0) e verde-azulado (~#2A98A9).
   - **Painel:** cor primária azul-marinho. Nos gráficos, dinheiro recebido = azul-marinho e bens/serviços (estimativa) = verde-azulado (antes: verde e azul). O significado de cada cor continua fixo em todas as telas.
-  - **Site:** os verdes de marca (hero, seções escuras, sombras, textos) passaram para a família azul-marinho. Mantive o dourado dos botões/destaques e a terracota dos gráficos como cores quentes de apoio.
+  - **Site:** os verdes de marca (hero, seções escuras, sombras, textos) passaram para a família azul-marinho. Os destaques e botões, antes dourados, agora são verde-azulado claro (#4FC0CF); a terracota dos gráficos foi mantida como cor quente de apoio.
 - Contraste revalidado: axe sem violações em 12 rotas.

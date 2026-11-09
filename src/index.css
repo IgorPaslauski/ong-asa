@@ -7,8 +7,8 @@
   --brand: #0b3a94;
   --brand-2: #1a56b8;
   --brand-deep: #0a2a6b;
-  --accent: #e5b546;
-  --accent-soft: #f4dfa3;
+  --accent: #4fc0cf;
+  --accent-soft: #cdeef2;
   --terracotta: #c97253;
   --terracotta-ink: #9e4a2f; /* terracota para texto sobre creme (AA) */
 
@@ -211,12 +211,12 @@ p {
 
 .btn-primary {
   background: var(--accent);
-  color: #1a1608;
+  color: #06122e;
   box-shadow: none;
 }
 
 .btn-primary:hover {
-  background: #e0ad2a;
+  background: #38aab9;
 }
 
 .btn-ghost {
@@ -290,7 +290,7 @@ p {
 .field select:focus,
 .field textarea:focus {
   border-color: var(--brand-2);
-  box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.18);
+  box-shadow: 0 0 0 4px rgba(42, 152, 169, 0.18);
 }
 
 .table-wrap {
@@ -352,7 +352,7 @@ tr:last-child td {
 }
 
 .badge-warn {
-  background: #f8ecd0;
+  background: #dff1f4;
   color: var(--warn);
 }
 
@@ -495,9 +495,9 @@ tr:last-child td {
 }
 
 .demo-banner {
-  background: #fff7df;
-  color: #6d5310;
-  border-bottom: 1px solid #efd889;
+  background: #e6f5f8;
+  color: #0f5560;
+  border-bottom: 1px solid #a9dce4;
   padding: 0.55rem 1rem;
   text-align: center;
   font-size: 0.85rem;
@@ -589,7 +589,7 @@ tr:last-child td {
 }
 
 .bar-list-fill.is-accent {
-  background: linear-gradient(90deg, #b8860b, var(--accent));
+  background: linear-gradient(90deg, #1d7f8c, var(--accent));
 }
 
 .bar-list-value {
