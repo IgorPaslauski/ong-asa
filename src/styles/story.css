@@ -495,3 +495,17 @@
   background: var(--bg);
   box-shadow: 0 -24px 48px -32px rgba(10, 42, 107, 0.18);
 }
+
+/* Banner em telas estreitas: foto 4:3 no topo e texto abaixo; sombra só vertical (vence a regra desktop acima) */
+@media (max-width: 900px) {
+  .hero-shade {
+    background: linear-gradient(
+      180deg,
+      rgba(6, 16, 42, 0.6) 0%,
+      rgba(6, 16, 42, 0) 16%,
+      rgba(10, 24, 60, 0) 55%,
+      rgba(10, 24, 60, 0.9) calc(100vw * 0.75 - 2rem),
+      var(--brand-deep) calc(100vw * 0.75 + 1rem)
+    );
+  }
+}

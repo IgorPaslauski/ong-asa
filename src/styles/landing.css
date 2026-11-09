@@ -971,8 +971,17 @@
   .hero-photo {
     inset: 0 0 auto 0;
     width: 100%;
-    height: 58%;
-    object-position: 62% 14%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: 50% 50%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  /* o texto começa logo abaixo da foto inteira (4:3 na largura da tela) */
+  .hero-copy {
+    padding-top: calc(100vw * 0.75 - 1.5rem);
   }
 
   .hero-shade {
@@ -1288,3 +1297,14 @@
 }
 .campaign-figures { font-variant-numeric: tabular-nums; }
 .campaign-card .btn { justify-self: start; }
+
+/* Alvos de toque confortáveis (>= 44px) em telas de toque/estreitas */
+@media (max-width: 900px) {
+  .text-link,
+  .footer-grid a,
+  .site-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
