@@ -124,11 +124,3 @@ npm run screenshots            # regenera docs/screenshots
   - **Site:** os verdes de marca (hero, seções escuras, sombras, textos) passaram para a família azul-marinho. Os destaques e botões, antes dourados, agora são verde-azulado claro (#4FC0CF); a terracota dos gráficos foi mantida como cor quente de apoio.
 - Contraste revalidado: axe sem violações em 12 rotas.
 
-## Adendo: suavização das cores do site
-
-As cores da logo foram mantidas, mas deixaram de ser blocos chapados (`src/styles/soften.css`):
-- seções escuras com degradê calmo e brilhos leves de verde-azulado e azul, em tom um pouco mais suave que o azul da logo;
-- transições em degradê entre as seções claras e escuras (a cor "entra" aos poucos);
-- fundos claros com um toque de azul e verde-azulado; gráficos do site em degradê;
-- botões com degradê discreto, sombra suave e transições mais lentas. Respeita "reduzir movimento".
-- Contraste da landing verificado com axe (teste novo em `e2e/a11y.spec.ts`).
