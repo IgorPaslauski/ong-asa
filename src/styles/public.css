@@ -1,0 +1,10 @@
+/*
+  Estilos do site público. Ficam em uma camada de menor prioridade ("public"),
+  abaixo das camadas do sistema administrativo (Tailwind), para que as regras
+  globais do site (ex.: seletores de elemento) nunca vazem para o painel.
+*/
+@layer public, theme, base, components, utilities;
+
+@import '../index.css' layer(public);
+@import './landing.css' layer(public);
+@import './story.css' layer(public);

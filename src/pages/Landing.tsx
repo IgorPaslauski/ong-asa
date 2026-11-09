@@ -14,8 +14,6 @@ import { ORG, PUBLIC_NOTES } from '../data/org'
 import { formatCurrency, formatDate } from '../data/mock'
 import { whatsapp } from '../lib/contact'
 import { buildLandingPublicModel } from '../lib/publicStats'
-import '../styles/landing.css'
-import '../styles/story.css'
 
 function compactMoney(value: number) {
   if (value >= 1000) {

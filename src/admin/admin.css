@@ -1,0 +1,232 @@
+/*
+  Sistema administrativo — Instituto A.S.A.
+  Tailwind v4 SEM o preflight global (ele alteraria o site público).
+  O reset é aplicado apenas dentro de `.admin-root`, que também é aplicado aos
+  conteúdos renderizados em portais (diálogos, menus, tooltips).
+  Camadas: public < theme < base < components < utilities.
+*/
+@layer public, theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-info: var(--info);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+}
+
+/* Tokens do admin: escopo `.admin-root`, nunca `:root` (o site usa :root). */
+.admin-root {
+  --background: #f8f9fa;
+  --foreground: #18212b;
+  --card: #ffffff;
+  --card-foreground: #18212b;
+  --popover: #ffffff;
+  --popover-foreground: #18212b;
+  --primary: #116b56;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f3f5;
+  --secondary-foreground: #18212b;
+  --muted: #f1f3f5;
+  --muted-foreground: #5b6778; /* AA sobre #fff e #f8f9fa */
+  --accent: #eef2f4;
+  --accent-foreground: #18212b;
+  --destructive: #b3403f; /* variação do erro #C04D4D com contraste AA para texto */
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #d5d9df;
+  --ring: #3978b6;
+  --info: #2f6aa3;
+  --warning: #8a5a10;
+  --success: #0e5c49;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #18212b;
+  --sidebar-border: #e5e7eb;
+  --sidebar-accent: #e8f1ee;
+
+  /* Paleta semântica de dados — mesmo significado em todas as telas */
+  --chart-1: #116b56; /* financeiro / confirmado / ativo */
+  --chart-2: #3978b6; /* bens e serviços (estimativa) */
+  --chart-3: #d99626; /* pendente / atenção */
+  --chart-4: #7a6a9e; /* complementar */
+  --chart-5: #94a3b8; /* neutro / concluído / outros */
+  --chart-error: #c04d4d;
+
+  --admin-radius: 6px;
+
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+@layer base {
+  .admin-root,
+  .admin-root *,
+  .admin-root ::before,
+  .admin-root ::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid var(--border);
+  }
+  .admin-root button,
+  .admin-root input,
+  .admin-root select,
+  .admin-root textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    background: transparent;
+    border-radius: 0;
+  }
+  .admin-root button {
+    cursor: pointer;
+    text-align: inherit;
+  }
+  .admin-root button:disabled {
+    cursor: not-allowed;
+  }
+  .admin-root a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .admin-root h1,
+  .admin-root h2,
+  .admin-root h3,
+  .admin-root h4,
+  .admin-root p {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+  .admin-root ul,
+  .admin-root ol {
+    list-style: none;
+  }
+  .admin-root img,
+  .admin-root svg {
+    display: block;
+    max-width: 100%;
+  }
+  .admin-root table {
+    border-collapse: collapse;
+    text-indent: 0;
+  }
+  .admin-root th,
+  .admin-root td {
+    padding: 0;
+    text-align: inherit;
+    font-weight: inherit;
+  }
+  .admin-root textarea {
+    resize: vertical;
+  }
+  .admin-root :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .admin-root [hidden] {
+    display: none !important;
+  }
+  .admin-root input[type='search']::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+/* O site público desenha um fundo decorativo no <body>; no admin ele some. */
+body[data-admin]::before,
+body[data-admin]::after {
+  display: none !important;
+}
+body[data-admin] {
+  background: #f8f9fa;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animações discretas (120–250 ms) e respeito a prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .admin-root *,
+  .admin-root ::before,
+  .admin-root ::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Impressão: apenas o conteúdo do relatório */
+@media print {
+  body[data-admin] {
+    background: #fff;
+  }
+  .admin-root .no-print {
+    display: none !important;
+  }
+  .admin-root .print-only {
+    display: block !important;
+  }
+  .admin-root [data-slot='admin-main'] {
+    padding: 0 !important;
+  }
+  .admin-root [data-slot='admin-shell'] {
+    display: block !important;
+    height: auto !important;
+  }
+  .admin-root {
+    background: #fff;
+  }
+  .admin-root .print-break-avoid {
+    break-inside: avoid;
+  }
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+}
+.print-only {
+  display: none;
+}
