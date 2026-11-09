@@ -22,13 +22,17 @@ import {
   getChildren,
   getDonations,
   getEvents,
+  getPosts,
   getHelpers,
   setActivities,
   setChildren,
   setDonations,
   setEvents,
+  setPosts,
   setHelpers,
 } from '@/lib/storage'
+import { INITIAL_POSTS } from '@/data/blogMock'
+import { normalizePost, uniqueSlug, type BlogPost } from '@/lib/blog'
 
 function subscribe(callback: () => void) {
   window.addEventListener('asa:data-changed', callback)
@@ -132,6 +136,30 @@ export const eventsRepo = {
   },
   setPublished(id: string, publicado: boolean) {
     setEvents(getEvents().map((e) => (e.id === id ? { ...e, publicado } : e)))
+  },
+}
+
+export const usePosts = () => useStored<BlogPost>(STORAGE_KEYS.blog, INITIAL_POSTS, normalizePost)
+
+export type PostInput = Omit<BlogPost, 'id' | 'slug' | 'criadoEm'>
+export const postsRepo = {
+  save(input: PostInput, id?: string): BlogPost {
+    const list = getPosts()
+    if (id) {
+      const current = list.find((p) => p.id === id) as BlogPost
+      const next: BlogPost = { ...current, ...input, id, slug: current.slug || uniqueSlug(input.titulo, list, id) }
+      setPosts(list.map((p) => (p.id === id ? next : p)))
+      return next
+    }
+    const created: BlogPost = { id: uid('p'), slug: uniqueSlug(input.titulo, list), criadoEm: new Date().toISOString().slice(0, 10), ...input }
+    setPosts([created, ...list])
+    return created
+  },
+  remove(id: string) {
+    setPosts(getPosts().filter((p) => p.id !== id))
+  },
+  setStatus(id: string, status: BlogPost['status']) {
+    setPosts(getPosts().map((p) => (p.id === id ? { ...p, status } : p)))
   },
 }
 

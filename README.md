@@ -22,6 +22,14 @@ npm run test:e2e     # testes funcionais e de acessibilidade (Playwright, Edge i
 npm run screenshots  # capturas em docs/screenshots
 ```
 
+## Blog
+
+- Público: `/#/blog` (lista) e `/#/blog/<slug>` (artigo). As últimas 3 notícias também aparecem na página inicial.
+- Painel: **Blog e notícias** (`/#/painel/blog`). Situações: rascunho → em revisão → publicado (a data de publicação pode ser futura, e o post fica agendado).
+- Permissões: administrador e equipe administrativa escrevem e publicam; **voluntários** escrevem, veem só os próprios textos e enviam para revisão.
+- Editor visual (TipTap) com negrito, itálico, sublinhado, riscado, código, títulos, listas, citação, bloco de código, linha divisória e links. O texto é salvo como HTML e **filtrado com DOMPurify** antes de salvar e de exibir (só a formatação do editor passa; scripts, estilos e imagens externas não). Posts antigos em texto simples são convertidos ao abrir. A foto de capa é reduzida (1200 px) antes de salvar.
+- Como o resto do MVP, os posts ficam no `localStorage` (`asa_blog_v1`): só aparecem no navegador onde foram escritos. Para outras pessoas verem, é preciso um backend (ex.: Supabase).
+
 ## Demo
 
 - Site: `/`

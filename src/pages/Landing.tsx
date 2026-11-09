@@ -18,6 +18,7 @@ import { formatCurrency, formatDate } from '../data/mock'
 import logoUrl from '../assets/logo-asa.png'
 import { whatsapp } from '../lib/contact'
 import { buildLandingPublicModel } from '../lib/publicStats'
+import { PostCard, usePublicPosts } from '../components/blog/BlogParts'
 import { formatEventTime, getPublicEvents } from '../lib/publicEvents'
 
 function compactMoney(value: number) {
@@ -66,6 +67,7 @@ const FAQ = [
 
 export default function Landing() {
   const enhanced = useEnhancedMotion()
+  const latestPosts = usePublicPosts().slice(0, 3)
   const [year, setYear] = useState<'all' | string>('all')
   const [revision, setRevision] = useState(0)
 
@@ -367,6 +369,28 @@ export default function Landing() {
 
         {/* 8. Candidatura de voluntário */}
         <VolunteerSection />
+
+        {/* 9. Últimas notícias do blog (só aparece quando há posts publicados) */}
+        {latestPosts.length > 0 ? (
+          <section className="news-strip" aria-labelledby="noticias-title">
+            <div className="blog-wrap">
+              <div className="news-strip-head">
+                <div>
+                  <p className="eyebrow">Blog</p>
+                  <h2 id="noticias-title">Últimas notícias.</h2>
+                </div>
+                <Link className="post-more" to="/blog">
+                  Ver todas as notícias <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+              <div className="post-grid">
+                {latestPosts.map((p) => (
+                  <PostCard key={p.id} post={p} />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <footer className="site-footer on-dark">
@@ -394,6 +418,9 @@ export default function Landing() {
           </div>
           <div>
             <h2>Equipe</h2>
+            <p>
+              <Link to="/blog">Blog</Link>
+            </p>
             <p>
               <Link to="/sistema">Entrar no sistema</Link>
             </p>

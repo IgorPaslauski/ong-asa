@@ -95,6 +95,11 @@ export default function SiteHeader() {
                 Como ajudar
               </a>
             </li>
+            <li>
+              <Link to="/blog" onClick={() => setOpen(false)}>
+                Blog
+              </Link>
+            </li>
             <li className="nav-team">
               <Link to="/sistema" onClick={() => setOpen(false)}>
                 Área da equipe

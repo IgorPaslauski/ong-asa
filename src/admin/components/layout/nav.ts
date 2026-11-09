@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BabyIcon, BoxesIcon, CalendarCheckIcon, MegaphoneIcon, MessageCircleIcon, ReceiptIcon, TargetIcon, UsersRoundIcon, HouseIcon, BarChart3Icon, CalendarDaysIcon, GaugeIcon, HandHeartIcon, HeartHandshakeIcon, PaletteIcon, SettingsIcon, ShieldCheckIcon, UserPlusIcon } from 'lucide-react'
+import { BabyIcon, BoxesIcon, CalendarCheckIcon, MegaphoneIcon, NewspaperIcon, MessageCircleIcon, ReceiptIcon, TargetIcon, UsersRoundIcon, HouseIcon, BarChart3Icon, CalendarDaysIcon, GaugeIcon, HandHeartIcon, HeartHandshakeIcon, PaletteIcon, SettingsIcon, ShieldCheckIcon, UserPlusIcon } from 'lucide-react'
 import { can, type Permission, type Role } from '@/lib/auth'
 
 export interface NavItem {
@@ -32,6 +32,7 @@ export const NAV: NavGroup[] = [
       { to: '/painel/voluntarios', label: 'Candidaturas', icon: UserPlusIcon, perm: 'candidaturas' },
       { to: '/painel/doacoes', label: 'Doações', icon: HeartHandshakeIcon, perm: 'doacoes' },
       { to: '/painel/eventos', label: 'Eventos', icon: CalendarDaysIcon, perm: 'eventos.ver' },
+      { to: '/painel/blog', label: 'Blog e notícias', icon: NewspaperIcon, perm: 'blog.escrever' },
       { to: '/painel/escala', label: 'Escala de voluntários', icon: CalendarCheckIcon, perm: 'escala' },
       { to: '/painel/estoque', label: 'Estoque', icon: BoxesIcon, perm: 'estoque' },
       { to: '/painel/atividades', label: 'Atividades', icon: PaletteIcon, perm: 'atividades' },

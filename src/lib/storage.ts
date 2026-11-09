@@ -9,9 +9,12 @@ import {
   type EventItem,
   type Helper,
 } from '../data/mock'
+import { INITIAL_POSTS } from '../data/blogMock'
+import type { BlogPost } from './blog'
 
 const KEYS = {
   events: 'asa_events_v1',
+  blog: 'asa_blog_v1',
   volunteerApps: 'asa_volunteer_apps_v1',
   children: 'asa_children_v3',
   helpers: 'asa_helpers_v3',
@@ -77,9 +80,19 @@ export function setEvents(items: EventItem[]) {
   write(KEYS.events, items)
 }
 
+/** Posts do blog: dados de demonstração até alguém cadastrar ou remover posts no painel. */
+export function getPosts(): BlogPost[] {
+  return read<BlogPost[]>(KEYS.blog, INITIAL_POSTS)
+}
+
+export function setPosts(items: BlogPost[]) {
+  write(KEYS.blog, items)
+}
+
 export function resetAllData() {
   setChildren(INITIAL_CHILDREN)
   setHelpers(INITIAL_HELPERS)
   setDonations(INITIAL_DONATIONS)
   write(KEYS.activities, INITIAL_ACTIVITIES)
+  setPosts(INITIAL_POSTS)
 }

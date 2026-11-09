@@ -15,6 +15,7 @@ import UsersPage from './features/users/users-page'
 import ChildrenPage from './features/children/children-page'
 import DashboardPage from './features/dashboard/dashboard-page'
 import DonationsPage from './features/donations/donations-page'
+import BlogPage from './features/blog/blog-page'
 import EventsPage from './features/events/events-page'
 import PeoplePage from './features/people/people-page'
 import { ActivitiesReport, InstitutionalReport, ServiceReport, SupportReport } from './features/reports/other-reports'
@@ -48,6 +49,7 @@ export default function AdminPanel() {
         <Route path="minhas-doacoes" element={<MyDonationsPage />} />
         <Route path="usuarios" element={<UsersPage />} />
         <Route path="eventos" element={<EventsPage />} />
+        <Route path="blog" element={<BlogPage />} />
         <Route path="relatorios" element={<ReportsHub />} />
         <Route path="relatorios/prestacao-de-contas" element={<AccountsReport />} />
         <Route path="relatorios/doacoes" element={<DonationsReport />} />

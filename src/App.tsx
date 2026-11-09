@@ -4,6 +4,8 @@ import Landing from './pages/Landing'
 
 // O sistema administrativo (e seu CSS) é carregado sob demanda: o site público não paga por ele.
 const AdminPanel = lazy(() => import('./admin/panel'))
+const Blog = lazy(() => import('./pages/Blog'))
+const BlogPostPage = lazy(() => import('./pages/BlogPost'))
 const AdminLogin = lazy(() => import('./admin/login'))
 
 function Loading() {
@@ -20,6 +22,8 @@ export default function App() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/sistema" element={<AdminLogin />} />
           <Route path="/painel/*" element={<AdminPanel />} />
           <Route path="*" element={<Navigate to="/" replace />} />

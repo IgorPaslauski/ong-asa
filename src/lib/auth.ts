@@ -23,8 +23,8 @@ export const ROLE_NAME: Record<Role, string> = {
 
 export const ROLE_SUMMARY: Record<Role, string> = {
   admin: 'Acesso total, incluindo cadastro de usuários e configurações.',
-  administrativo: 'Crianças e famílias, rede de apoio, doações, despesas, escala, estoque, metas, campanhas, comunicação, eventos, atividades e relatórios.',
-  voluntario: 'Consulta eventos, atividades e a própria escala. Não vê dados de crianças nem financeiros.',
+  administrativo: 'Crianças e famílias, rede de apoio, doações, despesas, escala, estoque, metas, campanhas, comunicação, eventos, blog, atividades e relatórios.',
+  voluntario: 'Consulta eventos, atividades e a própria escala; escreve textos para o blog (a equipe revisa antes de publicar). Não vê dados de crianças nem financeiros.',
   doador: 'Vê apenas as próprias doações.',
 }
 
@@ -45,6 +45,8 @@ export type Permission =
   | 'doacoes'
   | 'eventos.ver'
   | 'eventos.editar'
+  | 'blog.escrever'
+  | 'blog.publicar'
   | 'atividades'
   | 'atividades.editar'
   | 'relatorios'
@@ -53,9 +55,9 @@ export type Permission =
   | 'minhas-doacoes'
 
 const PERMISSIONS: Record<Role, readonly Permission[]> = {
-  admin: ['dashboard', 'criancas', 'rede', 'candidaturas', 'doacoes', 'eventos.ver', 'eventos.editar', 'atividades', 'atividades.editar', 'relatorios', 'despesas', 'familias', 'escala', 'estoque', 'metas', 'comunicacao', 'campanhas', 'usuarios', 'configuracoes'],
-  administrativo: ['dashboard', 'criancas', 'rede', 'candidaturas', 'doacoes', 'eventos.ver', 'eventos.editar', 'atividades', 'atividades.editar', 'relatorios', 'despesas', 'familias', 'escala', 'estoque', 'metas', 'comunicacao', 'campanhas'],
-  voluntario: ['inicio', 'eventos.ver', 'atividades', 'minha-escala'],
+  admin: ['dashboard', 'criancas', 'rede', 'candidaturas', 'doacoes', 'eventos.ver', 'eventos.editar', 'blog.escrever', 'blog.publicar', 'atividades', 'atividades.editar', 'relatorios', 'despesas', 'familias', 'escala', 'estoque', 'metas', 'comunicacao', 'campanhas', 'usuarios', 'configuracoes'],
+  administrativo: ['dashboard', 'criancas', 'rede', 'candidaturas', 'doacoes', 'eventos.ver', 'eventos.editar', 'blog.escrever', 'blog.publicar', 'atividades', 'atividades.editar', 'relatorios', 'despesas', 'familias', 'escala', 'estoque', 'metas', 'comunicacao', 'campanhas'],
+  voluntario: ['inicio', 'eventos.ver', 'blog.escrever', 'atividades', 'minha-escala'],
   doador: ['minhas-doacoes'],
 }
 
