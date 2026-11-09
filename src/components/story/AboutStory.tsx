@@ -89,8 +89,9 @@ export default function AboutStory() {
           <div className="photo-crop">
             <img
               ref={photo}
-              src="./images/about.webp"
-              alt="Grupo de crianças sorrindo para a câmera"
+              src="./images/mascote-asa.webp"
+              alt="Cachorro branco com laço azul, sentado diante do banner do Instituto A.S.A."
+              style={{ objectPosition: '50% 58%' }}
               loading="lazy"
               decoding="async"
             />

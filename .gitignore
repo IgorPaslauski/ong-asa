@@ -27,3 +27,20 @@ dist-ssr
 test-results
 playwright-report
 .vitest
+
+# Claude Code (configuração local e worktrees)
+.claude/
+
+# Comparações de design e artefatos locais de verificação
+.design-compare/
+*.tsbuildinfo
+coverage
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Sistema operacional
+Thumbs.db
+desktop.ini

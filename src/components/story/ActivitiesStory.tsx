@@ -43,8 +43,9 @@ const SCENES = [
   {
     kicker: 'Trabalho e acolhimento',
     title: 'Crescer',
-    photo: './images/impact.webp',
-    alt: 'Mãos de várias pessoas pintadas de vermelho, formando um coração',
+    photo: './images/camiseta-equipe.webp',
+    alt: 'Costas de uma voluntária com a camiseta azul “Transformando vidas e construindo futuros”',
+    position: '50% 62%',
     items: [
       {
         name: 'Jovens Empreendedores',
@@ -157,7 +158,13 @@ export default function ActivitiesStory({ enhanced }: { enhanced: boolean }) {
                     layers.current[index] = node
                   }}
                 >
-                  <img src={scene.photo} alt={scene.alt} loading="lazy" decoding="async" />
+                  <img
+                    src={scene.photo}
+                    alt={scene.alt}
+                    style={'position' in scene ? { objectPosition: scene.position } : undefined}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </figure>
               ))}
             </div>
