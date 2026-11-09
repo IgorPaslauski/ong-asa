@@ -1,16 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BarList, ColumnChart } from '../components/Charts'
-import {
-  ACTIONS_TIMELINE,
-  CHILDREN_BY_NEIGHBORHOOD,
-  DONATIONS_BY_DESTINATION,
-  DONATIONS_BY_TYPE,
-  MONTHLY_DONATIONS,
-  PUBLIC_IMPACT,
-  SUPPORT_NETWORK,
-} from '../data/impact'
-import { ORG, PUBLIC_NOTES } from '../data/org'
+import { ORG } from '../data/org'
 import { formatCurrency, formatDate } from '../data/mock'
+import { buildLandingPublicModel, type LandingPublicModel } from '../lib/publicStats'
 import '../styles/landing.css'
 
 function compactMoney(value: number) {
@@ -21,12 +14,27 @@ function compactMoney(value: number) {
 }
 
 export default function Landing() {
+  const [model, setModel] = useState<LandingPublicModel>(() => buildLandingPublicModel())
+
+  useEffect(() => {
+    const refresh = () => setModel(buildLandingPublicModel())
+    window.addEventListener('asa:data-changed', refresh)
+    window.addEventListener('storage', refresh)
+    window.addEventListener('focus', refresh)
+    return () => {
+      window.removeEventListener('asa:data-changed', refresh)
+      window.removeEventListener('storage', refresh)
+      window.removeEventListener('focus', refresh)
+    }
+  }, [])
+
   return (
     <div className="landing">
       <header className="hero">
         <div className="hero-media" aria-hidden="true">
           <img src="./images/hero.jpg" alt="" />
         </div>
+        <div className="hero-glow" aria-hidden="true" />
 
         <div className="container site-nav">
           <div className="brand">
@@ -35,7 +43,7 @@ export default function Landing() {
           </div>
           <nav className="nav-links" aria-label="Principal">
             <a href="#sobre">Sobre</a>
-            <a href="#dados">Dados</a>
+            <a href="#dados">Impacto</a>
             <a href="#acoes">Ações</a>
             <Link className="btn btn-ghost btn-sm" to="/sistema">
               Acessar sistema
@@ -49,68 +57,74 @@ export default function Landing() {
           <p className="hero-copy anim-in-delay">{ORG.tagline}</p>
           <div className="hero-actions anim-in-delay-2">
             <a className="btn btn-primary" href="#ajudar">
-              Quero ajudar
+              Quero fazer parte
             </a>
-            <a className="btn btn-ghost" href="#sobre">
-              Conhecer a associação
+            <a className="btn btn-ghost" href="#dados">
+              Ver impacto ao vivo
             </a>
           </div>
         </div>
       </header>
 
-      <section className="section" id="sobre">
-        <div className="container split">
-          <div>
+      <div className="live-ticker" aria-label="Números do sistema">
+        <div className="container ticker-track">
+          <span>
+            <strong>{model.live.childrenTotal}</strong> crianças no cadastro
+          </span>
+          <span>
+            <strong>{model.live.helpersActive}</strong> pessoas ativas na rede
+          </span>
+          <span>
+            <strong>{compactMoney(model.live.donationsTotalValue)}</strong> em doações confirmadas
+          </span>
+          <span>
+            <strong>{model.live.activitiesCount}</strong> ações registradas
+          </span>
+          <span className="ticker-tag">atualizado pelo sistema</span>
+        </div>
+      </div>
+
+      <section className="section story-section" id="sobre">
+        <div className="container story-layout">
+          <div className="story-copy">
             <p className="section-kicker">Quem somos</p>
-            <h2>{ORG.name} — {ORG.legalName}</h2>
+            <h2>
+              {ORG.shortName}
+              <span className="story-sub">{ORG.legalName}</span>
+            </h2>
             <p className="section-lead">{ORG.about[0]}</p>
-            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
-              {ORG.about[1]}
-            </p>
-            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
-              {ORG.cityContext}
-            </p>
-            <dl className="org-facts">
-              <div>
-                <dt>Fundação</dt>
-                <dd>{ORG.foundedLabel}</dd>
-              </div>
-              <div>
-                <dt>CNPJ</dt>
-                <dd>{ORG.cnpj}</dd>
-              </div>
-              <div>
-                <dt>Atendimento</dt>
-                <dd>
-                  {PUBLIC_NOTES.weeklyChildren} crianças/adolescentes por semana · {PUBLIC_NOTES.ageRange}
-                </dd>
-              </div>
-            </dl>
+            <p className="section-lead">{ORG.about[1]}</p>
+            <p className="section-lead soft">{ORG.cityContext}</p>
+
+            <div className="mission-grid">
+              <article className="mission-card">
+                <h3>Missão</h3>
+                <p>{ORG.mission}</p>
+              </article>
+              <article className="mission-card">
+                <h3>Visão</h3>
+                <p>{ORG.vision}</p>
+              </article>
+            </div>
           </div>
-          <div className="split-media">
-            <img src="./images/about.jpg" alt="Crianças e educadores em atividade" />
+
+          <div className="story-visual">
+            <div className="photo-stack">
+              <img className="photo main" src="./images/about.jpg" alt="Oficinas e acolhimento na A.S.A." />
+              <img className="photo secondary" src="./images/impact.jpg" alt="Comunidade em atividade" />
+              <div className="photo-badge">
+                <strong>Desde {ORG.founded}</strong>
+                <span>semeando o amanhã em Condor</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="container" style={{ marginTop: '2.5rem' }}>
-          <div className="mission-grid">
-            <article className="mission-card">
-              <h3>Missão</h3>
-              <p>{ORG.mission}</p>
-            </article>
-            <article className="mission-card">
-              <h3>Visão</h3>
-              <p>{ORG.vision}</p>
-            </article>
-            <article className="mission-card">
-              <h3>Princípio</h3>
-              <p>{ORG.principle}</p>
-            </article>
-          </div>
-
-          <div className="pillars" style={{ marginTop: '1.5rem' }}>
-            {ORG.pillars.map((p) => (
-              <article className="pillar" key={p.title}>
+        <div className="container">
+          <div className="pillars visual-pillars">
+            {ORG.pillars.map((p, i) => (
+              <article className="pillar-card" key={p.title} style={{ animationDelay: `${i * 0.06}s` }}>
+                <span className="pillar-index">0{i + 1}</span>
                 <h3>{p.title}</h3>
                 <p>{p.text}</p>
               </article>
@@ -123,38 +137,28 @@ export default function Landing() {
         <div className="container">
           <div className="section-head">
             <div>
-              <p className="section-kicker">Transparência {PUBLIC_IMPACT.yearLabel}</p>
-              <h2>O impacto da A.S.A. em números.</h2>
+              <p className="section-kicker">Impacto {model.yearLabel}</p>
+              <h2>Números que nascem do cuidado diário.</h2>
             </div>
             <p className="section-lead">
-              Indicadores para apresentação do MVP — calibrados à escala da associação em Condor.
-              No sistema, cadastros e doações alimentam a operação do dia a dia.
+              Doações, crianças, rede de apoio e ações vêm do mesmo sistema da equipe.
+              Quando o painel muda, a vitrine pública acompanha.
             </p>
           </div>
 
           <div className="kpi-grid">
-            <article className="kpi-card">
-              <span className="kpi-label">Doações no ano</span>
-              <strong className="kpi-value">{compactMoney(PUBLIC_IMPACT.donationsYear)}</strong>
-              <span className="kpi-foot">+ {formatCurrency(PUBLIC_IMPACT.donationsMonth)} em outubro</span>
-            </article>
-            <article className="kpi-card">
-              <span className="kpi-label">Crianças na rede</span>
-              <strong className="kpi-value">{PUBLIC_IMPACT.childrenAccompanied}</strong>
-              <span className="kpi-foot">~{PUBLIC_IMPACT.weeklyAttendance}/semana nas oficinas</span>
-            </article>
-            <article className="kpi-card">
-              <span className="kpi-label">Voluntariado</span>
-              <strong className="kpi-value">{PUBLIC_NOTES.volunteersCore + PUBLIC_NOTES.volunteersSupport}</strong>
-              <span className="kpi-foot">
-                {PUBLIC_NOTES.volunteersCore} efetivos · {PUBLIC_NOTES.volunteersSupport} em eventos
-              </span>
-            </article>
-            <article className="kpi-card">
-              <span className="kpi-label">Ações no ano</span>
-              <strong className="kpi-value">{PUBLIC_IMPACT.actionsCompleted}</strong>
-              <span className="kpi-foot">{PUBLIC_IMPACT.familiesHelped} famílias acompanhadas</span>
-            </article>
+            {model.kpis.map((kpi) => (
+              <article className={`kpi-card${kpi.source === 'system' ? ' is-live' : ''}`} key={kpi.key}>
+                <div className="kpi-top">
+                  <span className="kpi-label">{kpi.label}</span>
+                  <span className={`source-pill ${kpi.source}`}>
+                    {kpi.source === 'system' ? 'sistema' : 'contexto'}
+                  </span>
+                </div>
+                <strong className="kpi-value">{kpi.display}</strong>
+                <span className="kpi-foot">{kpi.foot}</span>
+              </article>
+            ))}
           </div>
 
           <div className="viz-grid">
@@ -162,143 +166,149 @@ export default function Landing() {
               <header className="viz-head">
                 <div>
                   <h3>Doações mês a mês</h3>
-                  <p>Arrecadação e estimativa em espécie (maio–outubro).</p>
+                  <p>Série montada a partir das doações confirmadas no sistema.</p>
                 </div>
-                <span className="viz-tag">R$ ilustrativo</span>
+                <span className="viz-tag">sistema</span>
               </header>
-              <ColumnChart
-                items={MONTHLY_DONATIONS.map((m) => ({ label: m.month, value: m.value }))}
-                formatValue={(v) => compactMoney(v).replace('R$ ', '')}
-              />
+              {model.monthly.length ? (
+                <ColumnChart
+                  items={model.monthly.map((m) => ({ label: m.label, value: m.value }))}
+                  formatValue={(v) => compactMoney(v).replace('R$ ', '')}
+                />
+              ) : (
+                <p className="empty-soft">Cadastre doações no painel para ver este gráfico.</p>
+              )}
             </article>
 
             <article className="viz-card">
               <header className="viz-head">
                 <div>
                   <h3>Por tipo de doação</h3>
-                  <p>Financeiro, alimentos, TI/material, roupas e serviços.</p>
+                  <p>Financeiro, alimentos, material, roupas e serviços.</p>
                 </div>
+                <span className="viz-tag">sistema</span>
               </header>
-              <BarList
-                items={DONATIONS_BY_TYPE.map((t) => ({
-                  label: t.label,
-                  value: t.value,
-                  hint: `${t.count} lançamentos`,
-                }))}
-                formatValue={compactMoney}
-              />
+              {model.byType.length ? (
+                <BarList
+                  items={model.byType.map((t) => ({
+                    label: t.label,
+                    value: t.value,
+                    hint: t.hint,
+                  }))}
+                  formatValue={compactMoney}
+                />
+              ) : (
+                <p className="empty-soft">Sem doações confirmadas ainda.</p>
+              )}
             </article>
 
             <article className="viz-card">
               <header className="viz-head">
                 <div>
                   <h3>Para onde vai o recurso</h3>
-                  <p>Oficinas, famílias, digital, cultura e empreendedorismo.</p>
+                  <p>Destinações usadas nos lançamentos do sistema.</p>
                 </div>
+                <span className="viz-tag">sistema</span>
               </header>
-              <BarList
-                accent
-                items={DONATIONS_BY_DESTINATION.map((d) => ({
-                  label: d.label,
-                  value: d.value,
-                }))}
-                formatValue={compactMoney}
-              />
+              {model.byDestination.length ? (
+                <BarList
+                  accent
+                  items={model.byDestination.map((d) => ({
+                    label: d.label,
+                    value: d.value,
+                  }))}
+                  formatValue={compactMoney}
+                />
+              ) : (
+                <p className="empty-soft">Sem destinações para exibir.</p>
+              )}
             </article>
 
             <article className="viz-card">
               <header className="viz-head">
                 <div>
-                  <h3>Rede que sustenta a A.S.A.</h3>
-                  <p>Voluntários, doadores e parceiros do município e região.</p>
+                  <h3>Rede de apoio</h3>
+                  <p>Papéis ativos no cadastro de quem ajuda.</p>
                 </div>
+                <span className="viz-tag">sistema</span>
               </header>
-              <BarList
-                items={SUPPORT_NETWORK.map((s) => ({ label: s.label, value: s.value }))}
-              />
-              <div className="mini-stats">
-                <div>
-                  <strong>{PUBLIC_IMPACT.recurringDonors}</strong>
-                  <span>doadores recorrentes</span>
-                </div>
-                <div>
-                  <strong>{PUBLIC_IMPACT.godparents}</strong>
-                  <span>padrinhos</span>
-                </div>
-                <div>
-                  <strong>{PUBLIC_IMPACT.partners}</strong>
-                  <span>parceiros</span>
-                </div>
-              </div>
+              {model.support.length ? (
+                <BarList items={model.support.map((s) => ({ label: s.label, value: s.value }))} />
+              ) : (
+                <p className="empty-soft">Cadastre voluntários e doadores no painel.</p>
+              )}
             </article>
           </div>
-          <p className="source-note">{PUBLIC_NOTES.sourcesLabel}</p>
+          <p className="source-note">{model.sourcesNote}</p>
         </div>
       </section>
 
-      <section className="section" id="acoes">
+      <section className="section gallery-section" id="acoes">
         <div className="container">
           <div className="section-head">
             <div>
-              <p className="section-kicker">O que fazemos</p>
-              <h2>Oficinas e ações que semeiam o amanhã.</h2>
+              <p className="section-kicker">Ações recentes</p>
+              <h2>O que a A.S.A. registrou por último.</h2>
             </div>
             <p className="section-lead">
-              Inclusão digital, reforço, música, dança, artesanato, assistência às famílias
-              e o Projeto Jovens Empreendedores — tudo com voluntários e parceiros.
+              Lista puxada das atividades do sistema — oficinas, entregas e encontros.
             </p>
           </div>
 
-          <div className="action-board">
-            {ACTIONS_TIMELINE.map((action) => (
-              <article className="action-card" key={`${action.date}-${action.title}`}>
+          <div className="action-board visual-actions">
+            {model.actions.map((action) => (
+              <article className="action-card rich" key={action.id}>
                 <div className="action-top">
-                  <span className="action-type">{action.type}</span>
-                  <time dateTime={action.date}>{formatDate(action.date)}</time>
+                  <span className="action-type">{action.tipo}</span>
+                  <time dateTime={action.data}>{formatDate(action.data)}</time>
                 </div>
-                <h3>{action.title}</h3>
-                <p className="action-result">{action.result}</p>
-                <p className="action-detail">{action.detail}</p>
+                <h3>{action.titulo}</h3>
+                <p className="action-result">{action.participantes} participantes</p>
+                <p className="action-detail">Registrado no painel da equipe · fonte sistema</p>
               </article>
             ))}
           </div>
 
-          <div className="viz-card map-card">
-            <header className="viz-head">
-              <div>
-                <h3>Atendimento no município</h3>
-                <p>A A.S.A. recebe crianças de todo Condor — centro, Olaria e interior.</p>
-              </div>
-            </header>
-            <BarList
-              accent
-              items={CHILDREN_BY_NEIGHBORHOOD.map((n) => ({
-                label: n.label,
-                value: n.value,
-                hint: 'crianças',
-              }))}
-            />
+          <div className="territory-band">
+            <div>
+              <p className="section-kicker">Território</p>
+              <h3>Onde estão as crianças cadastradas</h3>
+              <p>Distribuição pelos bairros informados no sistema.</p>
+            </div>
+            <div className="territory-chart">
+              <BarList
+                accent
+                items={model.byArea.map((n) => ({
+                  label: n.label,
+                  value: n.value,
+                  hint: n.hint,
+                }))}
+              />
+            </div>
           </div>
         </div>
       </section>
 
       <section className="section cta-section" id="ajudar">
-        <div className="container cta-panel">
-          <div>
+        <div className="container cta-panel visual-cta">
+          <div className="cta-copy">
             <p className="section-kicker">Participe</p>
-            <h2>Doe, seja voluntário ou parceiro da A.S.A.</h2>
+            <h2>Uma semente hoje. Um amanhã inteiro.</h2>
             <p className="section-lead">
-              A associação se mantém com doadores recorrentes, parcerias e voluntariado.
-              Cada contribuição ajuda a sustentar oficinas e o acolhimento em Condor.
+              Doe, voluntarie-se ou firme parceria. Cada gesto sustenta oficinas,
+              inclusão digital e o acolhimento de famílias em Condor.
             </p>
+            <div className="hero-actions">
+              <a className="btn btn-primary" href={`tel:+5555991349705`}>
+                Falar com a A.S.A.
+              </a>
+              <Link className="btn btn-ghost-dark" to="/sistema">
+                Ver painel demo
+              </Link>
+            </div>
           </div>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href={`tel:+5555991349705`}>
-              Ligar para a A.S.A.
-            </a>
-            <Link className="btn btn-ghost-dark" to="/sistema">
-              Abrir painel demo
-            </Link>
+          <div className="cta-photo" aria-hidden="true">
+            <img src="./images/impact.jpg" alt="" />
           </div>
         </div>
       </section>
@@ -330,7 +340,7 @@ export default function Landing() {
               <p>
                 <Link to="/sistema">Painel administrativo</Link>
               </p>
-              <p>MVP com dados mockados para apresentação à associação.</p>
+              <p>LP e painel compartilham o mesmo modelo de dados.</p>
             </div>
           </div>
           <div className="footer-note">

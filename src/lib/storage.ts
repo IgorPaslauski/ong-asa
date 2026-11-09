@@ -10,10 +10,10 @@ import {
 } from '../data/mock'
 
 const KEYS = {
-  children: 'asa_children_v1',
-  helpers: 'asa_helpers_v1',
-  donations: 'asa_donations_v1',
-  activities: 'asa_activities_v1',
+  children: 'asa_children_v2',
+  helpers: 'asa_helpers_v2',
+  donations: 'asa_donations_v2',
+  activities: 'asa_activities_v2',
   session: 'asa_session_v1',
 } as const
 
@@ -29,6 +29,7 @@ function read<T>(key: string, fallback: T): T {
 
 function write<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value))
+  window.dispatchEvent(new CustomEvent('asa:data-changed', { detail: { key } }))
 }
 
 export function getChildren(): Child[] {
@@ -57,6 +58,10 @@ export function setDonations(items: Donation[]) {
 
 export function getActivities(): Activity[] {
   return read(KEYS.activities, INITIAL_ACTIVITIES)
+}
+
+export function setActivities(items: Activity[]) {
+  write(KEYS.activities, items)
 }
 
 export function isAuthenticated() {
