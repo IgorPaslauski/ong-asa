@@ -64,6 +64,8 @@ export interface LandingPublicModel {
   live: {
     childrenTotal: number
     childrenActive: number
+    childrenFollowing: number
+    participations: number
     helpersActive: number
     donationsConfirmed: number
     donationsTotalValue: number
@@ -313,6 +315,8 @@ export function buildLandingPublicModel(year: string | 'all' = 'all'): LandingPu
     live: {
       childrenTotal: scopedChildren.length,
       childrenActive: activeChildren,
+      childrenFollowing: followChildren,
+      participations: scopedActivities.reduce((sum, a) => sum + a.participantes, 0),
       helpersActive: activeHelpers,
       donationsConfirmed: okDonations.length,
       donationsTotalValue: totalValue,

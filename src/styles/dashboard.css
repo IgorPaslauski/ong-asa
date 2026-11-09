@@ -104,13 +104,13 @@
   margin-top: 0.25rem;
 }
 
-.eyebrow {
+.dash-main .eyebrow {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--brand-2);
-  margin-bottom: 0.35rem !important;
+  margin: 0 0 0.35rem;
 }
 
 .header-actions {
@@ -240,7 +240,7 @@
   font-size: 0.78rem !important;
 }
 
-.timeline {
+.dash-page .timeline {
   display: grid;
   gap: 0.85rem;
 }
@@ -436,47 +436,6 @@
     display: none;
   }
 
-  .mobile-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    background: var(--brand);
-    color: #f4f7f2;
-    padding: 0.85rem 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
-
-  .mobile-top strong {
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-  }
-
-  .mobile-nav {
-    display: flex;
-    gap: 0.35rem;
-    overflow: auto;
-    padding: 0.65rem 1rem 0;
-  }
-
-  .mobile-nav a {
-    white-space: nowrap;
-    padding: 0.45rem 0.8rem;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid var(--line);
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .mobile-nav a.active {
-    background: var(--brand);
-    color: #f4f7f2;
-    border-color: var(--brand);
-  }
-
   .dash-main {
     padding: 1rem;
   }
@@ -484,4 +443,96 @@
   .metric-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Layout v3 — plano */
+.dash { grid-template-columns: 250px 1fr; background: #f6f4ee; }
+.dash-side { background: var(--brand-deep); padding: 1.5rem 1rem; }
+.dash-brand strong { color: #fff; }
+.dash-nav { gap: 0.15rem; }
+.dash-nav a { border-radius: 8px; padding: 0.7rem 0.85rem; opacity: 0.8; }
+.nav-label { display: inline-flex; align-items: center; gap: 0.7rem; }
+.dash-nav a.active { background: rgba(255, 255, 255, 0.12); color: #fff; opacity: 1; box-shadow: inset 3px 0 0 var(--accent); }
+.dash-side-foot { border-radius: 8px; }
+.dash-main { padding: 2rem clamp(1.25rem, 3vw, 2.5rem) 3rem; max-width: 1400px; width: 100%; }
+.dash-header { padding-bottom: 1rem; border-bottom: 1px solid #ddd6c6; }
+.dash-header h1 { color: var(--brand-deep); font-size: clamp(1.7rem, 3vw, 2.2rem); }
+.dash-main .eyebrow { color: #8a5a1a; }
+.metric-card, .panel.elev, .toolbar.smart { border-radius: 10px; box-shadow: none; border-color: #ddd6c6; }
+.metric-card strong { color: var(--brand-deep); font-size: 1.9rem; }
+.drawer-panel { border-radius: 0; }
+.drawer-backdrop { background: rgba(14, 42, 32, 0.5); }
+.login-page { background: var(--brand-deep); }
+.login-card { background: #fff; border: 0; border-radius: 12px; padding: 2.5rem 2rem; box-shadow: none; }
+.login-card .brand-mark { color: var(--brand-deep); }
+@media (max-width: 900px) {
+  .dash { grid-template-columns: 1fr; }
+  .dash-side { display: none; }
+  .mobile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--brand-deep);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .mobile-top strong { font-family: var(--font-display); font-size: 1.4rem; }
+  .mobile-menu-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 1rem;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mobile-nav {
+    display: none;
+    position: sticky;
+    top: 60px;
+    z-index: 39;
+    flex-direction: column;
+    background: var(--brand-deep);
+    padding: 0 1rem 1rem;
+  }
+  .mobile-nav.is-open { display: flex; }
+  .mobile-nav a, .mobile-logout {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    color: #fff;
+    font-weight: 600;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    background: transparent;
+    font-size: 1rem;
+    text-align: left;
+    padding: 0;
+    cursor: pointer;
+  }
+  .mobile-nav a.active { color: var(--accent-soft); }
+  .mobile-nav a { border-radius: 0; }
+  .dash-main { padding: 1.25rem 1rem 2rem; }
+  .dash-header { flex-direction: column; align-items: flex-start; }
+}
+@media (min-width: 901px) {
+  .mobile-top, .mobile-nav { display: none; }
+}
+
+/* Itens de grid não devem esticar a página: tabelas e gráficos rolam dentro do próprio cartão */
+.dash-main,
+.dash-page,
+.dash-page > *,
+.dash-grid-main > *,
+.dash-grid-3 > *,
+.metric-grid > *,
+.grid-2 > *,
+.grid-3 > *,
+.grid-4 > * {
+  min-width: 0;
 }

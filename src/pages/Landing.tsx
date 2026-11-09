@@ -1,51 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BarList, ColumnChart } from '../components/Charts'
-import { ACTIONS_TIMELINE, CHILDREN_BY_NEIGHBORHOOD } from '../data/impact'
+import Reveal from '../components/Reveal'
+import SiteHeader from '../components/SiteHeader'
+import ActivitiesStory from '../components/story/ActivitiesStory'
+import AboutStory from '../components/story/AboutStory'
+import HelpStory from '../components/story/HelpStory'
+import HeroScene from '../components/story/HeroScene'
+import ImpactStage from '../components/story/ImpactStage'
+import { useEnhancedMotion } from '../hooks/useMotion'
+import { ACTIONS_TIMELINE } from '../data/impact'
 import { ORG, PUBLIC_NOTES } from '../data/org'
 import { formatCurrency, formatDate } from '../data/mock'
+import { whatsapp } from '../lib/contact'
 import { buildLandingPublicModel } from '../lib/publicStats'
 import '../styles/landing.css'
-
-function Reveal({
-  children,
-  className = '',
-  delay = 0,
-}: {
-  children: ReactNode
-  className?: string
-  delay?: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const node = ref.current
-    if (!node) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.18, rootMargin: '0px 0px -6% 0px' },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className={`reveal${visible ? ' is-visible' : ''}${className ? ` ${className}` : ''}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  )
-}
+import '../styles/story.css'
 
 function compactMoney(value: number) {
   if (value >= 1000) {
@@ -54,7 +24,45 @@ function compactMoney(value: number) {
   return formatCurrency(value)
 }
 
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+
+function dateParts(iso: string) {
+  return {
+    day: iso.slice(8, 10),
+    month: MONTHS[Number(iso.slice(5, 7)) - 1] ?? '',
+    year: iso.slice(0, 4),
+  }
+}
+
+/** Cor discreta e estável por tipo de ação (só para ajudar a distinguir). */
+function toneOf(type: string) {
+  let sum = 0
+  for (const char of type) sum += char.charCodeAt(0)
+  return sum % 3
+}
+
+
+const FAQ = [
+  {
+    q: 'Quem pode participar?',
+    a: `Crianças e adolescentes de ${PUBLIC_NOTES.ageRange}. A associação atende famílias de todo o município de Condor.`,
+  },
+  {
+    q: 'As atividades são gratuitas?',
+    a: 'Sim. As oficinas são gratuitas para as famílias.',
+  },
+  {
+    q: 'Onde fica a associação?',
+    a: `${ORG.address}, ${ORG.city}/${ORG.state} — CEP ${ORG.cep}.`,
+  },
+  {
+    q: 'Como faço para inscrever meu filho?',
+    a: 'Fale com a equipe pelo WhatsApp ou por telefone. Eles explicam como funciona a inscrição e informam horários e vagas disponíveis.',
+  },
+]
+
 export default function Landing() {
+  const enhanced = useEnhancedMotion()
   const [year, setYear] = useState<'all' | string>('all')
   const [revision, setRevision] = useState(0)
 
@@ -70,388 +78,289 @@ export default function Landing() {
     }
   }, [])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const model = useMemo(() => buildLandingPublicModel(year), [year, revision])
+  const { live } = model
 
-  const actionCards =
+  const timeline = (
     model.actions.length > 0
       ? model.actions.map((action) => ({
           key: action.id,
           date: action.data,
           type: action.tipo,
           title: action.titulo,
-          result: `${action.participantes} participantes`,
-          detail: 'Registrado no sistema da associação.',
+          note: `${action.participantes} participantes`,
         }))
       : ACTIONS_TIMELINE.map((action) => ({
           key: `${action.date}-${action.title}`,
           date: action.date,
           type: action.type,
           title: action.title,
-          result: action.result,
-          detail: action.detail,
+          note: action.result,
         }))
+  ).slice(0, 6)
 
   return (
-    <div className="landing">
-      <header className="hero">
-        <div className="hero-media" aria-hidden="true">
-          <img src="./images/hero.jpg" alt="" />
-        </div>
+    <div className="landing" id="top">
+      <a className="skip-link" href="#conteudo">
+        Ir para o conteúdo
+      </a>
+      <SiteHeader />
 
-        <div className="container site-nav">
-          <div className="brand">
-            <span className="brand-mark">{ORG.shortName}</span>
-            <span className="brand-sub">{ORG.legalName}</span>
-          </div>
-          <nav className="nav-links" aria-label="Principal">
-            <a href="#sobre">Sobre</a>
-            <a href="#dados">Dados</a>
-            <a href="#acoes">Ações</a>
-            <Link className="btn btn-ghost btn-sm" to="/sistema">
-              Acessar sistema
-            </Link>
-          </nav>
-        </div>
+      <main id="conteudo">
+        {/* 1. Hero cinematográfico + abertura */}
+        <HeroScene enhanced={enhanced} />
 
-        <div className="hero-content">
-          <p className="hero-kicker anim-in">Instituto A.S.A. · Condor/RS</p>
-          <h1 className="hero-brand anim-in">{ORG.shortName}</h1>
-          <p className="hero-copy anim-in-delay">{ORG.tagline}</p>
-          <div className="hero-actions anim-in-delay-2">
-            <a className="btn btn-primary" href="#ajudar">
-              Quero ajudar
-            </a>
-            <a className="btn btn-ghost" href="#sobre">
-              Conhecer a associação
-            </a>
-          </div>
-        </div>
-      </header>
+        {/* 2. Quem somos */}
+        <AboutStory />
 
-      <section className="section" id="sobre">
-        <div className="container split">
-          <Reveal>
-          <div>
-            <p className="section-kicker">Quem somos</p>
-            <h2>{ORG.name} — {ORG.legalName}</h2>
-            <p className="section-lead">{ORG.about[0]}</p>
-            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
-              {ORG.about[1]}
-            </p>
-            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
-              {ORG.cityContext}
-            </p>
-            <dl className="org-facts">
-              <div>
-                <dt>Fundação</dt>
-                <dd>{ORG.foundedLabel}</dd>
-              </div>
-              <div>
-                <dt>CNPJ</dt>
-                <dd>{ORG.cnpj}</dd>
-              </div>
-              <div>
-                <dt>Atendimento</dt>
-                <dd>
-                  {PUBLIC_NOTES.weeklyChildren} crianças/adolescentes por semana · {PUBLIC_NOTES.ageRange}
-                </dd>
-              </div>
-            </dl>
-          </div>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="split-media">
-              <img src="./images/about.jpg" alt="Crianças e educadores em atividade" />
-            </div>
-          </Reveal>
-        </div>
+        {/* 3. Atividades em camadas */}
+        <ActivitiesStory enhanced={enhanced} />
 
-        <div className="container" style={{ marginTop: '2.5rem' }}>
-          <Reveal>
-          <div className="mission-grid">
-            <article className="mission-card">
-              <h3>Missão</h3>
-              <p>{ORG.mission}</p>
-            </article>
-            <article className="mission-card">
-              <h3>Visão</h3>
-              <p>{ORG.vision}</p>
-            </article>
-            <article className="mission-card">
-              <h3>Princípio</h3>
-              <p>{ORG.principle}</p>
-            </article>
-          </div>
-          </Reveal>
+        {/* 6. Impacto e transparência */}
+        <section className="section impact" id="impacto" aria-labelledby="impacto-title">
+          <div className="container">
+            <Reveal className="section-head">
+              <p className="eyebrow">Impacto e transparência</p>
+              <h2 id="impacto-title">O que já fizemos, em números.</h2>
+              <p className="lead">
+                Cada número abaixo conta uma coisa diferente, e explicamos qual. Os valores vêm do sistema
+                da associação, hoje em versão de demonstração — por isso são ilustrativos até a equipe
+                cadastrar os dados reais.
+              </p>
+            </Reveal>
 
-          <div className="pillars" style={{ marginTop: '1.5rem' }}>
-            {ORG.pillars.map((p, index) => (
-              <Reveal key={p.title} delay={index * 70}>
-                <article className="pillar">
-                  <h3>{p.title}</h3>
-                  <p>{p.text}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section data-strip" id="dados">
-        <div className="container">
-          <Reveal>
-          <div className="section-head">
-            <div>
-              <p className="section-kicker">Transparência {model.yearLabel}</p>
-              <h2>O impacto da A.S.A. em números.</h2>
-            </div>
-            <p className="section-lead">
-              Estes números saem dos cadastros e das doações do sistema. Quando a equipe atualiza o painel, a página acompanha.
-            </p>
-          </div>
-          </Reveal>
-
-          <div className="year-switch" role="tablist" aria-label="Ano">
-            <button type="button" className={year === 'all' ? 'is-on' : ''} onClick={() => setYear('all')}>
-              Todos os anos
-            </button>
-            {model.years.map((item) => (
+            <div className="year-switch" role="group" aria-label="Período dos dados">
               <button
-                key={item}
                 type="button"
-                className={year === item ? 'is-on' : ''}
-                onClick={() => setYear(item)}
+                aria-pressed={year === 'all'}
+                className={year === 'all' ? 'is-on' : ''}
+                onClick={() => setYear('all')}
               >
-                {item}
+                Todos os anos
               </button>
-            ))}
-          </div>
-
-          <Reveal>
-            <article className="viz-card evolution-card">
-              <header className="viz-head">
-                <div>
-                  <h3>Evolução por ano</h3>
-                  <p>Doações confirmadas de {model.years[0]} a {model.years.at(-1)}.</p>
-                </div>
-              </header>
-              <ColumnChart
-                items={model.evolution.map((point) => ({ label: point.year, value: point.donations }))}
-                formatValue={(value) => compactMoney(value).replace('R$ ', '')}
-              />
-              <div className="year-legend">
-                {model.evolution.map((point) => (
-                  <span key={point.year}>
-                    <strong>{point.year}</strong>
-                    {point.children} entradas · {point.actions} ações
-                  </span>
-                ))}
-              </div>
-            </article>
-          </Reveal>
-
-          <div className="kpi-grid">
-            {model.kpis.map((kpi, index) => (
-              <Reveal key={kpi.key} delay={index * 80}>
-                <article className="kpi-card">
-                  <span className="kpi-label">{kpi.label}</span>
-                  <strong className="kpi-value">{kpi.display}</strong>
-                  <span className="kpi-foot">{kpi.foot}</span>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-
-          <div className="viz-grid">
-            <Reveal>
-            <article className="viz-card">
-              <header className="viz-head">
-                <div>
-                  <h3>{year === 'all' ? 'Últimos meses' : `Meses de ${year}`}</h3>
-                  <p>
-                    {year === 'all'
-                      ? 'Os seis meses mais recentes, somando todos os anos.'
-                      : `Doações confirmadas dentro de ${year}.`}
-                  </p>
-                </div>
-              </header>
-              {model.monthly.length ? (
-                <ColumnChart
-                  items={model.monthly.map((m) => ({ label: m.label, value: m.value }))}
-                  formatValue={(v) => compactMoney(v).replace('R$ ', '')}
-                />
-              ) : (
-                <p className="section-lead">Sem doações confirmadas.</p>
-              )}
-            </article>
-            </Reveal>
-
-            <Reveal delay={90}>
-            <article className="viz-card">
-              <header className="viz-head">
-                <div>
-                  <h3>Por tipo de doação</h3>
-                  <p>Financeiro, alimentos, material, roupas e serviços.</p>
-                </div>
-              </header>
-              <BarList
-                items={model.byType.map((t) => ({
-                  label: t.label,
-                  value: t.value,
-                  hint: t.hint,
-                }))}
-                formatValue={compactMoney}
-              />
-            </article>
-            </Reveal>
-
-            <Reveal delay={40}>
-            <article className="viz-card">
-              <header className="viz-head">
-                <div>
-                  <h3>Para onde vai o recurso</h3>
-                  <p>Destinações registradas pela equipe.</p>
-                </div>
-              </header>
-              <BarList
-                accent
-                items={model.byDestination.map((d) => ({
-                  label: d.label,
-                  value: d.value,
-                }))}
-                formatValue={compactMoney}
-              />
-            </article>
-            </Reveal>
-
-            <Reveal delay={120}>
-            <article className="viz-card">
-              <header className="viz-head">
-                <div>
-                  <h3>Rede que sustenta a A.S.A.</h3>
-                  <p>Pessoas ativas no cadastro de quem ajuda.</p>
-                </div>
-              </header>
-              <BarList items={model.support.map((s) => ({ label: s.label, value: s.value }))} />
-            </article>
-            </Reveal>
-          </div>
-          <p className="source-note">{model.sourcesNote}</p>
-        </div>
-      </section>
-
-      <section className="section" id="acoes">
-        <div className="container">
-          <Reveal>
-          <div className="section-head">
-            <div>
-              <p className="section-kicker">O que fazemos</p>
-              <h2>Oficinas e ações que semeiam o amanhã.</h2>
+              {model.years.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={year === item}
+                  className={year === item ? 'is-on' : ''}
+                  onClick={() => setYear(item)}
+                >
+                  {item}
+                </button>
+              ))}
             </div>
-            <p className="section-lead">
-              Inclusão digital, reforço, música, dança, artesanato, assistência às famílias
-              e o Projeto Jovens Empreendedores — tudo com voluntários e parceiros.
-            </p>
-          </div>
-          </Reveal>
 
-          <div className="action-board">
-            {actionCards.map((action, index) => (
-              <Reveal key={action.key} delay={(index % 3) * 80}>
-                <article className="action-card">
-                  <div className="action-top">
-                    <span className="action-type">{action.type}</span>
-                    <time dateTime={action.date}>{formatDate(action.date)}</time>
-                  </div>
-                  <h3>{action.title}</h3>
-                  <p className="action-result">{action.result}</p>
-                  <p className="action-detail">{action.detail}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-
-          <div className="viz-card map-card">
-            <header className="viz-head">
-              <div>
-                <h3>Atendimento no município</h3>
-                <p>A A.S.A. recebe crianças de todo Condor — centro, Olaria e interior.</p>
-              </div>
-            </header>
-            <BarList
-              accent
-              items={(model.byArea.length ? model.byArea : CHILDREN_BY_NEIGHBORHOOD.map((n) => ({
-                label: n.label,
-                value: n.value,
-                hint: 'crianças',
-                source: 'editorial' as const,
-              }))).map((n) => ({
-                label: n.label,
-                value: n.value,
-                hint: n.hint,
-              }))}
+            <ImpactStage
+              enhanced={enhanced}
+              lead={{
+                prefix: 'cerca de',
+                value: PUBLIC_NOTES.weeklyChildren.replace(/^cerca de\s*/, ''),
+                title: 'crianças e adolescentes por semana',
+                note: 'É a presença semanal nas oficinas, segundo relatos da própria associação. Não é o mesmo número que o de fichas cadastradas.',
+              }}
+              items={[
+                {
+                  label: 'No cadastro',
+                  value: String(live.childrenTotal),
+                  unit: 'crianças e adolescentes',
+                  note: `${live.childrenActive} ativos · ${live.childrenFollowing} em acompanhamento. Inclui também quem já concluiu o ciclo.`,
+                },
+                {
+                  label: 'Ações realizadas',
+                  value: String(live.activitiesCount),
+                  unit: 'registradas',
+                  note: `${live.participations} participações somadas, contando cada pessoa em cada ação.`,
+                },
+                {
+                  label: 'Doações recebidas',
+                  value: compactMoney(live.donationsTotalValue),
+                  unit: 'confirmadas',
+                  note: `${live.donationsConfirmed} lançamentos, incluindo itens como alimentos e roupas, que entram com valor estimado.`,
+                },
+                {
+                  label: 'Rede de apoio',
+                  value: String(live.helpersActive),
+                  unit: 'pessoas ativas',
+                  note: 'Voluntários, doadores, padrinhos e parceiros cadastrados.',
+                },
+              ]}
             />
-          </div>
-        </div>
-      </section>
 
-      <section className="section cta-section" id="ajudar">
-        <div className="container cta-panel">
+            <div className="transparency">
+              <Reveal>
+                <h3>Para onde foram as doações</h3>
+                <p className="note">
+                  Destino indicado em cada doação confirmada ({model.yearLabel}). Este quadro mostra
+                  destinação, não o balanço de despesas.
+                </p>
+                <BarList
+                  accent
+                  items={model.byDestination
+                    .filter((d) => d.value > 0)
+                    .map((d) => ({ label: d.label, value: d.value }))}
+                  formatValue={compactMoney}
+                />
+              </Reveal>
+              <Reveal delay={100}>
+                <h3>Doações por mês</h3>
+                <p className="note">{year === 'all' ? 'Últimos seis meses.' : `Meses de ${year}.`}</p>
+                {model.monthly.length ? (
+                  <ColumnChart
+                    items={model.monthly.map((m) => ({ label: m.label, value: m.value }))}
+                    formatValue={(v) => compactMoney(v).replace('R$ ', '')}
+                  />
+                ) : (
+                  <p className="note">Sem doações confirmadas neste período.</p>
+                )}
+              </Reveal>
+            </div>
+
+            <details className="more-data">
+              <summary>Ver mais dados</summary>
+              <div className="transparency">
+                <div>
+                  <h3>Doações por ano</h3>
+                  <ColumnChart
+                    items={model.evolution.map((point) => ({ label: point.year, value: point.donations }))}
+                    formatValue={(value) => compactMoney(value).replace('R$ ', '')}
+                  />
+                </div>
+                <div>
+                  <h3>Tipos de doação</h3>
+                  <BarList
+                    items={model.byType.map((t) => ({ label: t.label, value: t.value, hint: t.hint }))}
+                    formatValue={compactMoney}
+                  />
+                </div>
+                <div>
+                  <h3>Quem sustenta a A.S.A.</h3>
+                  <BarList items={model.support.map((s) => ({ label: s.label, value: s.value }))} />
+                </div>
+                <div>
+                  <h3>De onde vêm as crianças</h3>
+                  <BarList
+                    accent
+                    items={model.byArea.map((n) => ({ label: n.label, value: n.value, hint: n.hint }))}
+                  />
+                </div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        {/* 5. Histórias e ações */}
+        <section className="section actions-section on-dark" aria-labelledby="acoes-title">
+          <div className="container">
+            <Reveal className="section-head">
+              <p className="eyebrow">Ações recentes</p>
+              <h2 id="acoes-title">O que andamos fazendo.</h2>
+            </Reveal>
+            <ol className="actions-feed">
+              {timeline.slice(0, 5).map((item, index) => {
+                const date = dateParts(item.date)
+                return (
+                  <Reveal
+                    as="li"
+                    key={item.key}
+                    className={`action${index === 0 ? ' action--lead' : ''}`}
+                    delay={(index % 2) * 80}
+                  >
+                    <time dateTime={item.date} className="action-date">
+                      <span className="visually-hidden">{formatDate(item.date)}</span>
+                      <span className="action-day" aria-hidden="true">
+                        {date.day}
+                      </span>
+                      <span className="action-month" aria-hidden="true">
+                        {date.month} {date.year}
+                      </span>
+                    </time>
+                    <div className="action-body">
+                      <span className={`tag tone-${toneOf(item.type)}`}>{item.type}</span>
+                      <h3>{item.title}</h3>
+                      <p>{item.note}</p>
+                    </div>
+                  </Reveal>
+                )
+              })}
+            </ol>
+          </div>
+        </section>
+
+        {/* 4. Como participar */}
+        <section className="section join" id="participar" aria-labelledby="participar-title">
+          <div className="container join-grid">
+            <Reveal>
+              <p className="eyebrow">Para as famílias</p>
+              <h2 id="participar-title">Como participar.</h2>
+              <p className="lead">
+                Tem uma criança ou adolescente em casa? Veja as dúvidas mais comuns e fale diretamente com a
+                equipe.
+              </p>
+              <div className="join-contact">
+                <a
+                  className="btn btn-primary"
+                  href={whatsapp('Olá! Gostaria de saber como inscrever meu filho nas atividades da A.S.A.')}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Falar com a equipe no WhatsApp
+                </a>
+                <p>
+                  Ou ligue: <a href="tel:+5555991349705">{ORG.phone}</a> ·{' '}
+                  <a href="tel:+555533791685">{ORG.phoneAlt}</a>
+                </p>
+              </div>
+            </Reveal>
+            <Reveal className="faq" delay={100}>
+              {FAQ.map((item, index) => (
+                <details key={item.q} open={index === 0}>
+                  <summary>{item.q}</summary>
+                  <p>{item.a}</p>
+                </details>
+              ))}
+            </Reveal>
+          </div>
+        </section>
+
+        {/* 7. Como ajudar */}
+        <HelpStory />
+      </main>
+
+      <footer className="site-footer on-dark">
+        <div className="container footer-grid">
           <div>
-            <p className="section-kicker">Participe</p>
-            <h2>Doe, seja voluntário ou parceiro da A.S.A.</h2>
-            <p className="section-lead">
-              A associação se mantém com doadores recorrentes, parcerias e voluntariado.
-              Cada contribuição ajuda a sustentar oficinas e o acolhimento em Condor.
+            <p className="footer-brand">{ORG.shortName}</p>
+            <p>
+              {ORG.name} — {ORG.legalName}
+            </p>
+            <p className="footer-muted">CNPJ {ORG.cnpj}</p>
+          </div>
+          <div>
+            <h2>Contato</h2>
+            <p>
+              <a href="tel:+5555991349705">{ORG.phone}</a> · <a href="tel:+555533791685">{ORG.phoneAlt}</a>
+            </p>
+            <p>
+              <a href={`mailto:${ORG.email}`}>{ORG.email}</a>
+            </p>
+            <p>
+              {ORG.address}
+              <br />
+              {ORG.city}/{ORG.state} · CEP {ORG.cep}
             </p>
           </div>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href={`tel:+5555991349705`}>
-              Ligar para a A.S.A.
-            </a>
-            <Link className="btn btn-ghost-dark" to="/sistema">
-              Abrir painel demo
-            </Link>
+          <div>
+            <h2>Equipe</h2>
+            <p>
+              <Link to="/sistema">Entrar no sistema</Link>
+            </p>
+            <p className="footer-muted">Versão de demonstração com dados ilustrativos.</p>
           </div>
         </div>
-      </section>
-
-      <footer className="site-footer">
-        <div className="container">
-          <div className="footer-grid">
-            <div>
-              <div className="footer-brand">{ORG.shortName}</div>
-              <p>{ORG.name}</p>
-              <p>{ORG.legalName}</p>
-              <p style={{ marginTop: '0.75rem' }}>{ORG.tagline}</p>
-              <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
-                CNPJ {ORG.cnpj}
-              </p>
-            </div>
-            <div>
-              <h4>Contato</h4>
-              <p>{ORG.phone}</p>
-              <p>{ORG.phoneAlt}</p>
-              <p>
-                {ORG.address}
-                <br />
-                {ORG.city}/{ORG.state} · CEP {ORG.cep}
-              </p>
-            </div>
-            <div>
-              <h4>Sistema</h4>
-              <p>
-                <Link to="/sistema">Painel administrativo</Link>
-              </p>
-              <p>MVP com dados mockados para apresentação à associação.</p>
-            </div>
-          </div>
-          <div className="footer-note">
-            <span>
-              © {new Date().getFullYear()} {ORG.legalName} — Instituto A.S.A.
-            </span>
-            <span>Condor · Rio Grande do Sul</span>
-          </div>
+        <div className="container footer-note">
+          © {new Date().getFullYear()} {ORG.legalName}
         </div>
       </footer>
     </div>
