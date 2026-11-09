@@ -99,6 +99,16 @@ export default function VolunteerSection() {
             <li>Você escolhe o dia e o tempo que cabem na sua rotina.</li>
             <li>Seus dados são usados apenas para o contato da associação.</li>
           </ul>
+          <figure className="volunteer-photo">
+            <img
+              src="./images/galeria/voluntarios-equipe.webp"
+              alt="Equipe de voluntários de camiseta azul posando juntos para uma selfie"
+              width={1400}
+              height={933}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
         </Reveal>
 
         <Reveal className="volunteer-card" delay={100}>

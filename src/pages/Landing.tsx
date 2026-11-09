@@ -8,6 +8,7 @@ import VolunteerSection from '../components/VolunteerSection'
 import ActivitiesStory from '../components/story/ActivitiesStory'
 import AboutStory from '../components/story/AboutStory'
 import HelpStory from '../components/story/HelpStory'
+import GallerySection from '../components/story/GallerySection'
 import HeroScene from '../components/story/HeroScene'
 import ImpactStage from '../components/story/ImpactStage'
 import { useEnhancedMotion } from '../hooks/useMotion'
@@ -320,6 +321,8 @@ export default function Landing() {
             </ol>
           </div>
         </section>
+
+        <GallerySection />
 
         <CampaignsSection />
 

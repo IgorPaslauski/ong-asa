@@ -4,15 +4,15 @@ import { range, sample, smooth } from '../../lib/motion'
 import { PUBLIC_NOTES } from '../../data/org'
 
 /**
- * FOTOS PROVISÓRIAS: o projeto ainda não tem fotografias de cada oficina.
- * Troque `src` e `alt` pelas fotos reais (uma por cena) quando a associação enviar.
+ * Fotos reais da associação (uma por cena). Para trocar, edite `photo`, `alt` e, se precisar, `position`.
  */
 const SCENES = [
   {
     kicker: 'Educação e inclusão digital',
     title: 'Aprender',
-    photo: './images/about.webp',
-    alt: 'Grupo de crianças sorrindo para a câmera',
+    photo: './images/galeria/inclusao.webp',
+    alt: 'Menina sorrindo em uma cadeira de rodas, com pintura no rosto',
+    position: '50% 55%',
     items: [
       {
         name: 'Reforço escolar',
@@ -27,8 +27,9 @@ const SCENES = [
   {
     kicker: 'Cultura e expressão',
     title: 'Criar',
-    photo: './images/hero.webp',
-    alt: 'Crianças brincando e acenando para a câmera',
+    photo: './images/galeria/bandinha.webp',
+    alt: 'Grupo de jovens e um violonista posando no palco após uma apresentação',
+    position: '42% 50%',
     items: [
       {
         name: 'Música',

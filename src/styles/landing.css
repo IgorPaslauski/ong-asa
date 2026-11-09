@@ -1308,3 +1308,74 @@
     min-height: 44px;
   }
 }
+
+/* ---------- Galeria de momentos ---------- */
+.gallery-featured {
+  margin: 0 0 var(--space-3);
+}
+
+.gallery-featured img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  /* mostra o grupo inteiro e corta o teto do galpão */
+  object-position: 50% 84%;
+  border-radius: 6px;
+  background: var(--brand-deep);
+}
+
+@media (max-width: 640px) {
+  .gallery-featured img {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.gallery-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 3;
+  column-gap: var(--space-3);
+}
+
+.gallery-grid li {
+  break-inside: avoid;
+  margin: 0 0 var(--space-3);
+}
+
+.gallery-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: var(--brand-deep);
+}
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    column-gap: var(--space-2, 0.5rem);
+  }
+  .gallery-grid li {
+    margin-bottom: var(--space-2, 0.5rem);
+  }
+}
+
+/* Foto da equipe na seção de voluntários */
+.volunteer-photo {
+  margin: var(--space-5) 0 0;
+}
+
+.volunteer-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
