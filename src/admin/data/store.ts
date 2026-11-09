@@ -42,22 +42,62 @@ function readRaw(key: string): string | null {
   }
 }
 
-function useStored<T>(key: string, fallback: T[]): T[] {
+/* Normalização na LEITURA: registros antigos ou incompletos ganham valores neutros
+ * para campos ausentes, sem reescrever o que está salvo e sem inventar dados. */
+const str = (v: unknown) => (typeof v === 'string' ? v : v == null ? '' : String(v))
+const num = (v: unknown) => {
+  const n = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(n) ? n : 0
+}
+const oneOf = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T =>
+  allowed.includes(v as T) ? (v as T) : fallback
+
+type Rec = Record<string, unknown>
+
+export function normalizeChild(r: Rec): Child {
+  return {
+    id: str(r.id), nome: str(r.nome), idade: num(r.idade), responsavel: str(r.responsavel), telefone: str(r.telefone),
+    bairro: str(r.bairro), escola: str(r.escola), status: oneOf(r.status, ['ativo', 'acompanhamento', 'concluido'], 'ativo'),
+    dataEntrada: str(r.dataEntrada), observacoes: str(r.observacoes),
+  }
+}
+export function normalizeHelper(r: Rec): Helper {
+  return {
+    id: str(r.id), nome: str(r.nome), email: str(r.email), telefone: str(r.telefone),
+    papel: oneOf(r.papel, ['voluntario', 'doador', 'padrinho', 'parceiro'], 'voluntario'),
+    cidade: str(r.cidade), desde: str(r.desde), ativo: r.ativo !== false,
+  }
+}
+export function normalizeDonation(r: Rec): Donation {
+  return {
+    id: str(r.id), doadorId: str(r.doadorId), doadorNome: str(r.doadorNome),
+    tipo: oneOf(r.tipo, ['financeira', 'alimento', 'roupa', 'material', 'servico'], 'financeira'),
+    valor: num(r.valor), descricao: str(r.descricao), data: str(r.data),
+    status: oneOf(r.status, ['confirmada', 'pendente', 'cancelada'], 'pendente'), destinacao: str(r.destinacao),
+  }
+}
+export function normalizeActivity(r: Rec): Activity {
+  return { id: str(r.id), titulo: str(r.titulo), data: str(r.data), tipo: str(r.tipo), participantes: num(r.participantes) }
+}
+
+function useStored<T>(key: string, fallback: T[], normalize: (r: Rec) => T): T[] {
   const raw = useSyncExternalStore(subscribe, () => readRaw(key))
   return useMemo(() => {
     if (!raw) return fallback
     try {
-      return JSON.parse(raw) as T[]
+      const parsed: unknown = JSON.parse(raw)
+      if (!Array.isArray(parsed)) return fallback
+      return parsed.filter((x): x is Rec => !!x && typeof x === 'object').map(normalize)
     } catch {
       return fallback
     }
-  }, [raw, fallback])
+  }, [raw, fallback, normalize])
 }
 
-export const useChildren = () => useStored<Child>(STORAGE_KEYS.children, INITIAL_CHILDREN)
-export const useHelpers = () => useStored<Helper>(STORAGE_KEYS.helpers, INITIAL_HELPERS)
-export const useDonations = () => useStored<Donation>(STORAGE_KEYS.donations, INITIAL_DONATIONS)
-export const useActivities = () => useStored<Activity>(STORAGE_KEYS.activities, INITIAL_ACTIVITIES)
+export const useChildren = () => useStored<Child>(STORAGE_KEYS.children, INITIAL_CHILDREN, normalizeChild)
+export const useHelpers = () => useStored<Helper>(STORAGE_KEYS.helpers, INITIAL_HELPERS, normalizeHelper)
+export const useDonations = () => useStored<Donation>(STORAGE_KEYS.donations, INITIAL_DONATIONS, normalizeDonation)
+export const useActivities = () => useStored<Activity>(STORAGE_KEYS.activities, INITIAL_ACTIVITIES, normalizeActivity)
 
 /* ------------------------------ Mutações (CRUD) ----------------------------- */
 

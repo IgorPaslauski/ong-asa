@@ -62,3 +62,14 @@ describe('repositório do admin sobre o armazenamento existente', () => {
     expect(getHelpers().find((x) => x.id === h.id)?.ativo).toBe(false)
   })
 })
+
+import { normalizeChild, normalizeDonation } from './store'
+
+describe('normalização na leitura', () => {
+  it('completa campos ausentes sem lançar erro', () => {
+    const c = normalizeChild({ id: 'x', nome: 'Fulano' })
+    expect(c).toMatchObject({ idade: 0, status: 'ativo', dataEntrada: '', bairro: '' })
+    const d = normalizeDonation({ id: 'd', valor: 'abc', tipo: 'zzz' })
+    expect(d).toMatchObject({ valor: 0, tipo: 'financeira', status: 'pendente', data: '', destinacao: '' })
+  })
+})

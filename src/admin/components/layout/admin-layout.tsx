@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronsUpDownIcon, ExternalLinkIcon, LogOutIcon, MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from 'lucide-react'
 import { Button } from '@/admin/components/ui/button'
+import { ErrorBoundary } from '@/admin/components/feedback/error-boundary'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -196,7 +197,9 @@ export default function AdminLayout() {
           ) : null}
           <main id="conteudo" tabIndex={-1} data-slot="admin-main" className="min-h-0 flex-1 overflow-y-auto px-4 py-5 outline-none sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-[1480px]">
-              <Outlet />
+              <ErrorBoundary resetKey={location.pathname}>
+                <Outlet />
+              </ErrorBoundary>
             </div>
           </main>
         </div>
