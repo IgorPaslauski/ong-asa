@@ -17,6 +17,8 @@ const KEYS = {
   session: 'asa_session_v1',
 } as const
 
+export const STORAGE_KEYS = KEYS
+
 function read<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key)

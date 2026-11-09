@@ -1,29 +1,30 @@
+import { lazy, Suspense } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Landing from './pages/Landing'
-import Login from './pages/Login'
-import ChildrenPage from './pages/dashboard/ChildrenPage'
-import DonationsPage from './pages/dashboard/DonationsPage'
-import HelpersPage from './pages/dashboard/HelpersPage'
-import DashboardLayout from './pages/dashboard/Layout'
-import Overview from './pages/dashboard/Overview'
-import ReportsPage from './pages/dashboard/ReportsPage'
+
+// O sistema administrativo (e seu CSS) é carregado sob demanda: o site público não paga por ele.
+const AdminPanel = lazy(() => import('./admin/panel'))
+const AdminLogin = lazy(() => import('./admin/login'))
+
+function Loading() {
+  return (
+    <div role="status" aria-live="polite" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', color: '#5b6778', font: '14px Inter, system-ui, sans-serif' }}>
+      Carregando…
+    </div>
+  )
+}
 
 export default function App() {
   return (
     <HashRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/sistema" element={<Login />} />
-        <Route path="/painel" element={<DashboardLayout />}>
-          <Route index element={<Navigate to="visao-geral" replace />} />
-          <Route path="visao-geral" element={<Overview />} />
-          <Route path="criancas" element={<ChildrenPage />} />
-          <Route path="pessoas" element={<HelpersPage />} />
-          <Route path="doacoes" element={<DonationsPage />} />
-          <Route path="relatorios" element={<ReportsPage />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/sistema" element={<AdminLogin />} />
+          <Route path="/painel/*" element={<AdminPanel />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </HashRouter>
   )
 }
