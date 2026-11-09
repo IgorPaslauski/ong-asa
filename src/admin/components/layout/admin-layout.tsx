@@ -20,9 +20,9 @@ import { NAV } from './nav'
 
 function Brand({ collapsed }: { collapsed?: boolean }) {
   return (
-    <Link to="/painel/visao-geral" className="flex items-center gap-2.5 rounded-md px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Instituto A.S.A. — Dashboard">
-      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-primary text-[11px] font-bold tracking-wide text-primary-foreground">ASA</span>
-      {collapsed ? null : (
+    <Link to="/painel/visao-geral" className="flex items-center gap-2.5 rounded-md px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md bg-primary text-[11px] font-bold tracking-wide text-primary-foreground">ASA</span>
+      {collapsed ? <span className="sr-only">Instituto A.S.A. — Dashboard</span> : (
         <span className="min-w-0 leading-tight">
           <span className="block truncate text-sm font-semibold">Instituto A.S.A.</span>
           <span className="block truncate text-xs text-muted-foreground">Sistema administrativo</span>
@@ -45,8 +45,7 @@ function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: 
                   to={item.to}
                   end={item.end}
                   onClick={onNavigate}
-                  aria-label={collapsed ? item.label : undefined}
-                  className={({ isActive }) =>
+                                    className={({ isActive }) =>
                     cn(
                       'flex h-9 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-foreground/80 transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
                       isActive && 'bg-sidebar-accent text-primary hover:bg-sidebar-accent',
@@ -55,7 +54,7 @@ function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: 
                   }
                 >
                   <item.icon className="size-4 shrink-0" aria-hidden="true" />
-                  {collapsed ? null : <span className="truncate">{item.label}</span>}
+                  {collapsed ? <span className="sr-only">{item.label}</span> : <span className="truncate">{item.label}</span>}
                 </NavLink>
               )
               return (
@@ -86,11 +85,10 @@ function UserMenu({ collapsed, onLogout }: { collapsed?: boolean; onLogout: () =
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label="Menu do usuário"
           className={cn('flex w-full items-center gap-2.5 rounded-md p-1.5 text-left outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring', collapsed && 'justify-center')}
         >
           <span className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-semibold">{initials}</span>
-          {collapsed ? null : (
+          {collapsed ? <span className="sr-only">Menu do usuário: {email}</span> : (
             <>
               <span className="min-w-0 flex-1 leading-tight">
                 <span className="block truncate text-[13px] font-medium">{email}</span>
@@ -143,7 +141,7 @@ export default function AdminLayout() {
 
   return (
     <TooltipProvider>
-      <div data-slot="admin-shell" className="admin-root flex h-dvh min-h-0 w-full">
+      <div data-slot="admin-shell" className="admin-root flex h-dvh min-h-0 w-full bg-background">
         <a href="#conteudo" className="sr-only z-[80] rounded-md bg-primary px-3 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:top-2 focus:left-2">
           Ir para o conteúdo
         </a>

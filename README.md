@@ -12,6 +12,16 @@ Landing institucional e painel interno para o Instituto A.S.A., em Condor/RS. O 
 - Registro de doações
 - Relatórios com filtro de período, gráficos, exportação CSV e impressão
 
+## Sistema administrativo
+
+Painel em `src/admin/` (Tailwind v4 + shadcn/ui, TanStack Table, Recharts). Carregado sob demanda; o CSS do site público fica em uma camada separada (`src/styles/public.css`). Detalhes, decisões, testes e limitações: [docs/admin-redesign-report.md](docs/admin-redesign-report.md).
+
+```bash
+npm run check        # lint + typecheck + testes unitários + build
+npm run test:e2e     # testes funcionais e de acessibilidade (Playwright, Edge instalado)
+npm run screenshots  # capturas em docs/screenshots
+```
+
 ## Demo
 
 - Site: `/`

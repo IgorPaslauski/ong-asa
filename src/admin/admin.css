@@ -88,17 +88,18 @@
 
   --admin-radius: 6px;
 
-  color: var(--foreground);
-  background-color: var(--background);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  font-synthesis: none;
-  font-feature-settings: 'cv11', 'ss01';
 }
 
 @layer base {
+  /* Tipografia e cor base (em camada, para utilitários como bg-* e text-* sempre vencerem). */
+  .admin-root {
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-synthesis: none;
+  }
   .admin-root,
   .admin-root *,
   .admin-root ::before,
@@ -216,10 +217,7 @@ body[data-admin] {
     display: block !important;
     height: auto !important;
   }
-  .admin-root {
-    background: #fff;
-  }
-  .admin-root .print-break-avoid {
+    .admin-root .print-break-avoid {
     break-inside: avoid;
   }
   @page {

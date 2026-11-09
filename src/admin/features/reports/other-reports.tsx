@@ -89,7 +89,7 @@ export function ServiceReport() {
         </>
       }
       summary={
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <Kpi label="Cadastros no recorte" value={formatNumber(rows.length)} scope="Por data de entrada no acompanhamento" />
           <Kpi label="Ativos" value={formatNumber(counts.ativo ?? 0)} scope="Situação atual do cadastro" />
           <Kpi label="Em acompanhamento" value={formatNumber(counts.acompanhamento ?? 0)} scope="Situação atual do cadastro" tone={counts.acompanhamento ? 'warning' : 'default'} />
@@ -291,7 +291,7 @@ export function SupportReport() {
         </>
       }
       summary={
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <Kpi label="Pessoas e organizações" value={formatNumber(filteredHelpers.length)} scope="Cadastros na rede (situação atual)" />
           <Kpi label="Ativas" value={formatNumber(filteredHelpers.filter((h) => h.ativo).length)} scope="Situação atual" />
           <Kpi label="Contribuíram no período" value={formatNumber(contributors)} scope="Com doação confirmada no período" />
@@ -399,7 +399,7 @@ export function InstitutionalReport() {
       filtersApplied={[]}
       controls={<p className="text-[13px] text-muted-foreground">Este resumo cobre todo o histórico, ano a ano, sem filtros.</p>}
       summary={
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <Kpi label="Dinheiro recebido" value={formatBRL(totals.cashReceived)} scope="Todo o histórico · financeiras confirmadas" />
           <Kpi label="Bens e serviços (estimativa)" value={formatBRL(totals.inKindEstimate)} scope="Todo o histórico · não é caixa" />
           <Kpi label="Ações realizadas" value={formatNumber(activities.length)} scope="Todo o histórico" />

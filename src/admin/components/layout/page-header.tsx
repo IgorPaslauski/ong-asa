@@ -49,6 +49,7 @@ export function PageHeader({
   return (
     <header className="no-print mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
       <div className="min-w-0 space-y-1.5">
+        {shown.length > 0 ? (
         <Breadcrumb>
           <BreadcrumbList>
             {shown.map((c) => (
@@ -68,6 +69,7 @@ export function PageHeader({
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        ) : null}
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-xl leading-tight font-semibold tracking-tight sm:text-2xl">{title}</h1>
           <DemoBadge />

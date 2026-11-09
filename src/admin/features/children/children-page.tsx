@@ -5,7 +5,7 @@ import { CheckCircle2Icon, EyeIcon, PencilIcon, PlusIcon, Trash2Icon, UserRoundC
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Button } from '@/admin/components/ui/button'
-import { Card } from '@/admin/components/ui/card'
+import { StatStrip } from '@/admin/components/charts/stat-strip'
 import { Sheet, SheetBody, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/admin/components/ui/sheet'
 import { SortableHeader, DataTable } from '@/admin/components/data-table/data-table'
 import { dateSort, enumSort, numberSort, textSort } from '@/admin/components/data-table/columns'
@@ -16,7 +16,7 @@ import { Detail, NumberField, SelectField, TextField, TextareaField } from '@/ad
 import { FormSection, FormSheet } from '@/admin/components/forms/form-sheet'
 import { PageHeader } from '@/admin/components/layout/page-header'
 import { childrenRepo, useChildren } from '@/admin/data/store'
-import { formatDateBR, formatNumber, todayISO } from '@/admin/lib/format'
+import { formatDateBR, todayISO } from '@/admin/lib/format'
 import { STATUS_LABEL, type Child, type ChildStatus } from '@/data/mock'
 import { AGE_BANDS, ageBandLabel, ageBandOf, childSchema, timeInProgram, type ChildFormValues } from './schema'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -211,19 +211,7 @@ export default function ChildrenPage() {
         }
       />
 
-      <dl className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Resumo dos cadastros">
-        {[
-          ['Cadastros', counts.total],
-          ['Ativos', counts.ativo],
-          ['Em acompanhamento', counts.acompanhamento],
-          ['Concluídos', counts.concluido],
-        ].map(([label, value]) => (
-          <Card key={label as string} className="flex-row items-baseline justify-between gap-2 px-4 py-2.5">
-            <dt className="text-[13px] text-muted-foreground">{label}</dt>
-            <dd className="text-lg font-semibold tabular">{formatNumber(value as number)}</dd>
-          </Card>
-        ))}
-      </dl>
+      <StatStrip label="Resumo dos cadastros" items={[['Cadastros', counts.total], ['Ativos', counts.ativo], ['Em acompanhamento', counts.acompanhamento], ['Concluídos', counts.concluido]]} />
 
       <DataTable<Child>
         id="children"

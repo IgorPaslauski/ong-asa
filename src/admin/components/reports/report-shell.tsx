@@ -83,8 +83,9 @@ export function ReportPeriodControl({
       </Select>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="h-9 gap-2 px-3 font-normal" aria-label="Escolher datas do período">
+          <Button variant="outline" className="h-9 gap-2 px-3 font-normal">
             <CalendarIcon className="text-muted-foreground" />
+            <span className="sr-only">Datas do período:</span>
             <span className="tabular">{describePeriod(period)}</span>
           </Button>
         </PopoverTrigger>

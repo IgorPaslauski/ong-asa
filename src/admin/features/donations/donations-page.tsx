@@ -214,7 +214,7 @@ export default function DonationsPage() {
         }
       />
 
-      <div className="mb-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-3 grid grid-cols-2 gap-3 xl:grid-cols-4">
         <Kpi
           label="Dinheiro recebido"
           value={formatBRL(totals.cashReceived)}

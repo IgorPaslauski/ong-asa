@@ -24,7 +24,7 @@ export function Kpi({
   children?: ReactNode
 }) {
   return (
-    <Card className={cn('gap-1 px-4 py-3.5', className)}>
+    <Card className={cn('gap-1 px-3.5 py-3 sm:px-4 sm:py-3.5', className)}>
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[13px] font-medium text-muted-foreground">{label}</h3>
         {explanation ? (
@@ -38,7 +38,7 @@ export function Kpi({
           </Tooltip>
         ) : null}
       </div>
-      <p className={cn('text-[26px] leading-tight font-semibold tracking-tight tabular', tone === 'warning' && 'text-[#8a5a10]')}>{value}</p>
+      <p className={cn('text-[20px] leading-tight sm:text-[26px] font-semibold tracking-tight tabular', tone === 'warning' && 'text-[#8a5a10]')}>{value}</p>
       <p className="text-xs text-muted-foreground">{scope}</p>
       {children}
     </Card>

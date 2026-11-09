@@ -5,7 +5,7 @@ import { Badge } from '@/admin/components/ui/badge'
 import { Button } from '@/admin/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/admin/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/admin/components/ui/select'
-import { Tabs, TabsList, TabsTrigger } from '@/admin/components/ui/tabs'
+import { Segmented } from '@/admin/components/ui/segmented'
 import { ChartCard, LegendItem } from '@/admin/components/charts/chart-card'
 import { CompositionBar, HorizontalBarChart, TimeSeriesChart } from '@/admin/components/charts/charts'
 import { CHART, CHILD_STATUS_COLOR } from '@/admin/components/charts/palette'
@@ -145,7 +145,7 @@ export default function DashboardPage() {
 
       <section aria-label="Indicadores principais" className="mb-4">
         <h2 className="sr-only">Indicadores principais</h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <Kpi
             label="Dinheiro recebido"
             value={formatBRL(totals.cashReceived)}
@@ -191,12 +191,7 @@ export default function DashboardPage() {
               </>
             }
             controls={
-              <Tabs value={granularity} onValueChange={(v) => setGranularity(v as Granularity)}>
-                <TabsList aria-label="Granularidade">
-                  <TabsTrigger value="month">Mensal</TabsTrigger>
-                  <TabsTrigger value="year">Anual</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <Segmented label="Granularidade" value={granularity} onValueChange={setGranularity} options={[{ value: 'month', label: 'Mensal' }, { value: 'year', label: 'Anual' }]} />
             }
             height={280}
           >
@@ -226,12 +221,7 @@ export default function DashboardPage() {
               altText={`Barras horizontais com as ${destinations.length} principais destinações.`}
               tableRows={destinations.map((d) => ({ label: d.label, values: [{ header: 'Valor', value: formatBRL(d.value) }, { header: 'Doações', value: String(d.count) }] }))}
               controls={
-                <Tabs value={destMode} onValueChange={(v) => setDestMode(v as DestMode)}>
-                  <TabsList aria-label="Natureza do valor">
-                    <TabsTrigger value="cash">Dinheiro</TabsTrigger>
-                    <TabsTrigger value="inKind">Estimativa</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <Segmented label="Natureza do valor" value={destMode} onValueChange={setDestMode} options={[{ value: 'cash', label: 'Dinheiro' }, { value: 'inKind', label: 'Estimativa' }]} />
               }
               height={250}
             >

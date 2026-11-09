@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/admin/components/ui/button'
 import { Card } from '@/admin/components/ui/card'
+import { StatStrip } from '@/admin/components/charts/stat-strip'
 import { Sheet, SheetBody, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/admin/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/admin/components/ui/table'
 import { DataTable, SortableHeader } from '@/admin/components/data-table/data-table'
@@ -21,7 +22,7 @@ import { PageHeader } from '@/admin/components/layout/page-header'
 import { donationsOfHelper, summarizeDonations } from '@/admin/data/domain'
 import { helpersRepo, useDonations, useHelpers } from '@/admin/data/store'
 import type { ExportColumn } from '@/admin/lib/export'
-import { formatBRL, formatDateBR, formatNumber, todayISO } from '@/admin/lib/format'
+import { formatBRL, formatDateBR, todayISO } from '@/admin/lib/format'
 import { ROLE_LABEL, type Donation, type Helper, type HelperRole } from '@/data/mock'
 import { ORG } from '@/data/org'
 
@@ -239,19 +240,7 @@ export default function PeoplePage() {
         }
       />
 
-      <dl className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Resumo da rede de apoio">
-        {[
-          ['Pessoas e organizações', counts.total],
-          ['Ativas', counts.ativos],
-          ['Doadores', counts.doador],
-          ['Voluntários', counts.voluntario],
-        ].map(([label, value]) => (
-          <Card key={label as string} className="flex-row items-baseline justify-between gap-2 px-4 py-2.5">
-            <dt className="text-[13px] text-muted-foreground">{label}</dt>
-            <dd className="text-lg font-semibold tabular">{formatNumber(value as number)}</dd>
-          </Card>
-        ))}
-      </dl>
+      <StatStrip label="Resumo da rede de apoio" items={[['Pessoas e organizações', counts.total], ['Ativas', counts.ativos], ['Doadores', counts.doador], ['Voluntários', counts.voluntario]]} />
 
       <DataTable<Row>
         id="people"
@@ -334,11 +323,11 @@ export default function PeoplePage() {
                     <HeartHandshakeIcon className="size-4 text-muted-foreground" aria-hidden="true" />
                     Histórico de contribuições
                   </h3>
-                  <dl className="mb-3 grid grid-cols-3 gap-2 text-center">
-                    <Card className="px-2 py-2"><dt className="text-xs text-muted-foreground">Doações confirmadas</dt><dd className="font-semibold tabular">{detail.donationsCount}</dd></Card>
-                    <Card className="px-2 py-2"><dt className="text-xs text-muted-foreground">Dinheiro recebido</dt><dd className="font-semibold tabular">{formatBRL(detail.cash)}</dd></Card>
-                    <Card className="px-2 py-2"><dt className="text-xs text-muted-foreground">Bens/serviços (estim.)</dt><dd className="font-semibold tabular">{formatBRL(detail.inKind)}</dd></Card>
-                  </dl>
+                  <ul className="mb-3 grid grid-cols-3 gap-2 text-center">
+                    <li><Card className="px-2 py-2"><span className="text-xs text-muted-foreground">Doações confirmadas</span><strong className="block font-semibold tabular">{detail.donationsCount}</strong></Card></li>
+                    <li><Card className="px-2 py-2"><span className="text-xs text-muted-foreground">Dinheiro recebido</span><strong className="block font-semibold tabular">{formatBRL(detail.cash)}</strong></Card></li>
+                    <li><Card className="px-2 py-2"><span className="text-xs text-muted-foreground">Bens/serviços (estim.)</span><strong className="block font-semibold tabular">{formatBRL(detail.inKind)}</strong></Card></li>
+                  </ul>
                   {history.length === 0 ? (
                     <p className="rounded-md border border-dashed p-4 text-center text-[13px] text-muted-foreground">Nenhuma contribuição registrada para esta pessoa.</p>
                   ) : (

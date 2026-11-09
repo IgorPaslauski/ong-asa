@@ -73,9 +73,7 @@ export function ComboboxFilterControl({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          role="combobox"
           aria-expanded={open}
-          aria-label={label}
           className={cn('h-9 min-w-36 justify-between gap-2 px-3 font-normal', className)}
         >
           <span className="truncate">
@@ -154,7 +152,7 @@ export function DateRangeControl({
     <div className={cn('inline-flex items-center', className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" aria-label={label} className="h-9 gap-2 px-3 font-normal">
+          <Button variant="outline" className="h-9 gap-2 px-3 font-normal">
             <CalendarIcon className="text-muted-foreground" />
             <span className="text-muted-foreground">{label}:</span>
             <span className="tabular">{text}</span>

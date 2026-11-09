@@ -15,7 +15,7 @@ import { formatBRL, formatBRLCompact, formatDateBR, formatMonthLong, formatMonth
 import { useSessionState } from '@/admin/lib/hooks'
 import type { ExportColumn } from '@/admin/lib/export'
 import { DONATION_STATUS_LABEL, DONATION_TYPE_LABEL, type Donation, type DonationStatus, type DonationType } from '@/data/mock'
-import { Tabs, TabsList, TabsTrigger } from '@/admin/components/ui/tabs'
+import { Segmented } from '@/admin/components/ui/segmented'
 import { DONATION_EXPORT_COLUMNS } from '../donations/donations-page'
 
 const SOURCE = 'registro de doações do sistema (dados de demonstração gravados no navegador)'
@@ -93,7 +93,7 @@ export default function DonationsReport() {
         </>
       }
       summary={
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <Kpi label="Dinheiro recebido" value={formatBRL(totals.cashReceived)} scope="Doações financeiras confirmadas" explanation="Soma das doações do tipo Financeira com situação Confirmada no período e filtros." />
           <Kpi label="Bens e serviços (estimativa)" value={formatBRL(totals.inKindEstimate)} scope="Valores estimados · não é caixa" explanation="Soma dos valores estimados de doações em espécie e serviços confirmados." />
           <Kpi label="Aguardando confirmação" value={formatNumber(totals.pendingCount)} scope={`${formatBRL(totals.cashPending)} em dinheiro + ${formatBRL(totals.inKindPending)} estimados`} tone={totals.pendingCount ? 'warning' : 'default'} />
@@ -136,9 +136,7 @@ export default function DonationsReport() {
         tableRows={series.map((p) => ({ label: granularity === 'month' ? formatMonthShort(p.key) : p.key, values: [{ header: 'Dinheiro', value: formatBRL(p.cash) }, { header: 'Estimativa', value: formatBRL(p.inKind) }] }))}
         legend={<><LegendItem color={CHART.cash} label="Dinheiro recebido" /><LegendItem color={CHART.inKind} label="Bens e serviços (estimativa)" /></>}
         controls={
-          <Tabs value={granularity} onValueChange={(v) => setGranularity(v as Granularity)}>
-            <TabsList aria-label="Granularidade"><TabsTrigger value="month">Mensal</TabsTrigger><TabsTrigger value="year">Anual</TabsTrigger></TabsList>
-          </Tabs>
+          <Segmented label="Granularidade" value={granularity} onValueChange={setGranularity} options={[{ value: 'month', label: 'Mensal' }, { value: 'year', label: 'Anual' }]} />
         }
       >
         <TimeSeriesChart

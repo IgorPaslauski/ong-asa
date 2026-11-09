@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="admin-root grid min-h-dvh place-items-center px-4 py-10">
+    <div className="admin-root grid min-h-dvh place-items-center bg-background px-4 py-10">
       <main className="w-full max-w-sm">
         <div className="mb-6 flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-md bg-primary text-xs font-bold tracking-wide text-primary-foreground">ASA</span>
