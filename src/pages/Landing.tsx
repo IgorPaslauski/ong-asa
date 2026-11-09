@@ -14,6 +14,7 @@ import { ORG, PUBLIC_NOTES } from '../data/org'
 import { formatCurrency, formatDate } from '../data/mock'
 import { whatsapp } from '../lib/contact'
 import { buildLandingPublicModel } from '../lib/publicStats'
+import { formatEventTime, getPublicEvents } from '../lib/publicEvents'
 
 function compactMoney(value: number) {
   if (value >= 1000) {
@@ -79,6 +80,9 @@ export default function Landing() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const model = useMemo(() => buildLandingPublicModel(year), [year, revision])
   const { live } = model
+  // Agenda: eventos publicados pela equipe no painel (só os de hoje em diante).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const upcoming = useMemo(() => getPublicEvents().slice(0, 6), [revision])
 
   const timeline = (
     model.actions.length > 0
@@ -251,6 +255,34 @@ export default function Landing() {
         {/* 5. Histórias e ações */}
         <section className="section actions-section on-dark" aria-labelledby="acoes-title">
           <div className="container">
+            {upcoming.length > 0 ? (
+              <div id="agenda" aria-labelledby="agenda-title" role="region" style={{ marginBottom: 'clamp(3rem, 7vw, 5rem)' }}>
+                <Reveal className="section-head">
+                  <p className="eyebrow">Agenda</p>
+                  <h2 id="agenda-title">Próximos eventos.</h2>
+                </Reveal>
+                <ol className="actions-feed">
+                  {upcoming.map((item, index) => {
+                    const date = dateParts(item.data)
+                    const when = formatEventTime(item)
+                    return (
+                      <Reveal as="li" key={item.id} className={`action${index === 0 ? ' action--lead' : ''}`} delay={(index % 2) * 80}>
+                        <time dateTime={item.data} className="action-date">
+                          <span className="visually-hidden">{formatDate(item.data)}</span>
+                          <span className="action-day" aria-hidden="true">{date.day}</span>
+                          <span className="action-month" aria-hidden="true">{date.month} {date.year}</span>
+                        </time>
+                        <div className="action-body">
+                          {when || item.local ? <span className="tag tone-0">{[when, item.local].filter(Boolean).join(' · ')}</span> : null}
+                          <h3>{item.titulo}</h3>
+                          {item.descricao ? <p>{item.descricao}</p> : null}
+                        </div>
+                      </Reveal>
+                    )
+                  })}
+                </ol>
+              </div>
+            ) : null}
             <Reveal className="section-head">
               <p className="eyebrow">Ações recentes</p>
               <h2 id="acoes-title">O que andamos fazendo.</h2>

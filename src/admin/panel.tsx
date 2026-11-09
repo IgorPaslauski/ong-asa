@@ -4,6 +4,7 @@ import AdminLayout from './components/layout/admin-layout'
 import ChildrenPage from './features/children/children-page'
 import DashboardPage from './features/dashboard/dashboard-page'
 import DonationsPage from './features/donations/donations-page'
+import EventsPage from './features/events/events-page'
 import PeoplePage from './features/people/people-page'
 import { ActivitiesReport, InstitutionalReport, ServiceReport, SupportReport } from './features/reports/other-reports'
 import DonationsReport from './features/reports/donations-report'
@@ -20,6 +21,7 @@ export default function AdminPanel() {
         <Route path="criancas" element={<ChildrenPage />} />
         <Route path="pessoas" element={<PeoplePage />} />
         <Route path="doacoes" element={<DonationsPage />} />
+        <Route path="eventos" element={<EventsPage />} />
         <Route path="relatorios" element={<ReportsHub />} />
         <Route path="relatorios/doacoes" element={<DonationsReport />} />
         <Route path="relatorios/atendimentos" element={<ServiceReport />} />

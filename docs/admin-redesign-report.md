@@ -106,3 +106,12 @@ npm run check                  # lint + typecheck + vitest + build
 npm run build && npm run test:e2e   # Playwright (usa Edge; PW_CHANNEL=chrome para Chrome)
 npm run screenshots            # regenera docs/screenshots
 ```
+
+## Adendo: Eventos (agenda sincronizada com a landing)
+
+- Nova área **Eventos** no painel (`/painel/eventos`): cadastro, edição, remoção, rascunho/publicado, busca, filtro de situação e exportação.
+- Os eventos ficam em `asa_events_v1` (chave nova; nenhum dado existente foi alterado) e **não** se misturam com as `Activity` (ações já realizadas, que alimentam os números públicos).
+- A landing ganhou o bloco **Próximos eventos** (reaproveita o estilo do feed "Ações recentes"). Ele só aparece quando há evento **publicado** com data de hoje em diante; rascunhos e eventos passados não aparecem. Não há eventos de demonstração.
+- Atualização na landing é imediata na mesma aba e nas demais abas do mesmo navegador (evento `asa:data-changed` / `storage`).
+- **Limitação:** sem backend, a "sincronização" vale só dentro do mesmo navegador. Visitantes do site em outros dispositivos só verão os eventos quando houver um servidor/API para guardar os dados.
+- A leitura dos dados do painel agora é tolerante a registros incompletos, e há um error boundary por tela.

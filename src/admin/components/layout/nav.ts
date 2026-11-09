@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { BabyIcon, BarChart3Icon, GaugeIcon, HandHeartIcon, HeartHandshakeIcon, SettingsIcon } from 'lucide-react'
+import { BabyIcon, BarChart3Icon, CalendarDaysIcon, GaugeIcon, HandHeartIcon, HeartHandshakeIcon, SettingsIcon } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -20,6 +20,7 @@ export const NAV: NavGroup[] = [
       { to: '/painel/criancas', label: 'Crianças e adolescentes', icon: BabyIcon },
       { to: '/painel/pessoas', label: 'Rede de apoio', icon: HandHeartIcon },
       { to: '/painel/doacoes', label: 'Doações', icon: HeartHandshakeIcon },
+      { to: '/painel/eventos', label: 'Eventos', icon: CalendarDaysIcon },
     ],
   },
   { label: 'Análise', items: [{ to: '/painel/relatorios', label: 'Relatórios', icon: BarChart3Icon }] },

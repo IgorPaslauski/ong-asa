@@ -5,10 +5,10 @@ import { Button } from '@/admin/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/admin/components/ui/card'
 import { ConfirmDialog } from '@/admin/components/feedback/confirm-dialog'
 import { PageHeader } from '@/admin/components/layout/page-header'
-import { useActivities, useChildren, useDonations, useHelpers } from '@/admin/data/store'
+import { useActivities, useChildren, useDonations, useEvents, useHelpers } from '@/admin/data/store'
 import { downloadBlob } from '@/admin/lib/export'
 import { formatNumber, todayISO } from '@/admin/lib/format'
-import { getActivities, getChildren, getDonations, getHelpers, resetAllData } from '@/lib/storage'
+import { getActivities, getChildren, getDonations, getEvents, getHelpers, resetAllData } from '@/lib/storage'
 
 function clearUiPreferences() {
   const clear = (store: Storage, prefix: string) => {
@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const helpers = useHelpers()
   const donations = useDonations()
   const activities = useActivities()
+  const events = useEvents()
   const [confirmReset, setConfirmReset] = useState(false)
 
   function exportBackup() {
@@ -44,6 +45,7 @@ export default function SettingsPage() {
       helpers: getHelpers(),
       donations: getDonations(),
       activities: getActivities(),
+      events: getEvents(),
     }
     downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), `asa-backup-${todayISO()}.json`)
     toast.success('Backup gerado.', { description: 'O arquivo contém dados pessoais. Guarde em local seguro.' })
@@ -59,12 +61,13 @@ export default function SettingsPage() {
             <CardDescription>Este MVP não tem servidor: tudo é gravado em localStorage e some se os dados do navegador forem apagados.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {[
                 ['Crianças', children.length],
                 ['Rede de apoio', helpers.length],
                 ['Doações', donations.length],
                 ['Atividades', activities.length],
+                ['Eventos', events.length],
               ].map(([l, v]) => (
                 <div key={l as string} className="rounded-md border px-3 py-2">
                   <dt className="text-xs text-muted-foreground">{l}</dt>

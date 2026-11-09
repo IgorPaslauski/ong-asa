@@ -34,6 +34,7 @@ test('login, navegação e todas as áreas do menu abrem sem erros de console', 
     ['Crianças e adolescentes', 'Crianças e adolescentes'],
     ['Rede de apoio', 'Rede de apoio'],
     ['Doações', 'Doações'],
+    ['Eventos', 'Eventos'],
     ['Relatórios', 'Relatórios'],
     ['Configurações', 'Configurações'],
     ['Dashboard', 'Visão geral'],
@@ -167,4 +168,25 @@ test('teclado: foco visível e menu de ordenação acessível', async ({ page })
   await page.keyboard.press('Tab')
   const focused = await page.evaluate(() => document.activeElement?.textContent)
   expect(focused).toContain('Ir para o conteúdo')
+})
+
+test("eventos: cadastro no painel aparece na landing e rascunho some", async ({ page }) => {
+  await login(page)
+  await page.goto("/#/painel/eventos?novo=1")
+  await page.getByRole("textbox", { name: /Título/ }).fill("Festa junina solidária")
+  await page.getByRole("button", { name: "Cadastrar evento" }).click()
+  // validação: data é obrigatória
+  await expect(page.getByText("Informe a data do evento.")).toBeVisible()
+  await page.getByLabel(/^Data/).fill("2099-06-20")
+  await page.getByRole("button", { name: "Cadastrar evento" }).click()
+  await expect(page.getByRole("row", { name: /Festa junina solidária/ })).toBeVisible()
+
+  await page.goto("/")
+  await expect(page.locator("#agenda")).toContainText("Festa junina solidária")
+
+  await page.goto("/#/painel/eventos")
+  await page.getByRole("button", { name: "Abrir ações da linha" }).first().click()
+  await page.getByRole("menuitem", { name: /Tirar do site/ }).click()
+  await page.goto("/")
+  await expect(page.locator("#agenda")).toHaveCount(0)
 })

@@ -6,10 +6,12 @@ import {
   type Activity,
   type Child,
   type Donation,
+  type EventItem,
   type Helper,
 } from '../data/mock'
 
 const KEYS = {
+  events: 'asa_events_v1',
   children: 'asa_children_v3',
   helpers: 'asa_helpers_v3',
   donations: 'asa_donations_v3',
@@ -64,6 +66,15 @@ export function getActivities(): Activity[] {
 
 export function setActivities(items: Activity[]) {
   write(KEYS.activities, items)
+}
+
+/** Eventos futuros: sem dados de demonstração (a agenda só mostra o que a equipe cadastrar). */
+export function getEvents(): EventItem[] {
+  return read<EventItem[]>(KEYS.events, [])
+}
+
+export function setEvents(items: EventItem[]) {
+  write(KEYS.events, items)
 }
 
 export function isAuthenticated() {

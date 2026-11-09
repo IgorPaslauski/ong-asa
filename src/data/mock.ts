@@ -39,6 +39,20 @@ export interface Donation {
   destinacao: string
 }
 
+/** Evento futuro cadastrado pela equipe. Só os marcados como `publicado` aparecem no site. */
+export interface EventItem {
+  id: string
+  titulo: string
+  /** AAAA-MM-DD */
+  data: string
+  /** HH:MM (opcional) */
+  horaInicio: string
+  horaFim: string
+  local: string
+  descricao: string
+  publicado: boolean
+}
+
 export interface Activity {
   id: string
   titulo: string

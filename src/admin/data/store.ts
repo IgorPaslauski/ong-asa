@@ -13,15 +13,18 @@ import {
   type Activity,
   type Child,
   type Donation,
+  type EventItem,
   type Helper,
 } from '@/data/mock'
 import {
   STORAGE_KEYS,
   getChildren,
   getDonations,
+  getEvents,
   getHelpers,
   setChildren,
   setDonations,
+  setEvents,
   setHelpers,
 } from '@/lib/storage'
 
@@ -80,6 +83,13 @@ export function normalizeActivity(r: Rec): Activity {
   return { id: str(r.id), titulo: str(r.titulo), data: str(r.data), tipo: str(r.tipo), participantes: num(r.participantes) }
 }
 
+export function normalizeEvent(r: Rec): EventItem {
+  return {
+    id: str(r.id), titulo: str(r.titulo), data: str(r.data), horaInicio: str(r.horaInicio), horaFim: str(r.horaFim),
+    local: str(r.local), descricao: str(r.descricao), publicado: r.publicado === true,
+  }
+}
+
 function useStored<T>(key: string, fallback: T[], normalize: (r: Rec) => T): T[] {
   const raw = useSyncExternalStore(subscribe, () => readRaw(key))
   return useMemo(() => {
@@ -98,6 +108,29 @@ export const useChildren = () => useStored<Child>(STORAGE_KEYS.children, INITIAL
 export const useHelpers = () => useStored<Helper>(STORAGE_KEYS.helpers, INITIAL_HELPERS, normalizeHelper)
 export const useDonations = () => useStored<Donation>(STORAGE_KEYS.donations, INITIAL_DONATIONS, normalizeDonation)
 export const useActivities = () => useStored<Activity>(STORAGE_KEYS.activities, INITIAL_ACTIVITIES, normalizeActivity)
+const NO_EVENTS: EventItem[] = []
+export const useEvents = () => useStored<EventItem>(STORAGE_KEYS.events, NO_EVENTS, normalizeEvent)
+
+export type EventInput = Omit<EventItem, 'id'>
+export const eventsRepo = {
+  save(input: EventInput, id?: string): EventItem {
+    const list = getEvents()
+    if (id) {
+      const next = { ...(list.find((e) => e.id === id) as EventItem), ...input, id }
+      setEvents(list.map((e) => (e.id === id ? next : e)))
+      return next
+    }
+    const created: EventItem = { id: uid('e'), ...input }
+    setEvents([created, ...list])
+    return created
+  },
+  remove(id: string) {
+    setEvents(getEvents().filter((e) => e.id !== id))
+  },
+  setPublished(id: string, publicado: boolean) {
+    setEvents(getEvents().map((e) => (e.id === id ? { ...e, publicado } : e)))
+  },
+}
 
 /* ------------------------------ Mutações (CRUD) ----------------------------- */
 
