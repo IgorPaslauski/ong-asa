@@ -28,7 +28,7 @@ export default function DashboardLayout() {
         MVP com dados mockados — alterações ficam só neste navegador (localStorage)
       </div>
       <div className="mobile-top">
-        <strong>ASA</strong>
+        <strong>A.S.A.</strong>
         <button className="btn btn-ghost btn-sm" type="button" onClick={handleLogout}>
           Sair
         </button>
@@ -44,8 +44,8 @@ export default function DashboardLayout() {
       <div className="dash">
         <aside className="dash-side">
           <div className="dash-brand">
-            <strong>ASA</strong>
-            <span>Painel interno</span>
+            <strong>A.S.A.</strong>
+            <span>Semeando o Amanhã</span>
           </div>
           <nav className="dash-nav" aria-label="Menu">
             {links.map((l) => (

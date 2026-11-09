@@ -334,10 +334,12 @@ export default function DonationsPage() {
                 onChange={(e) => setForm({ ...form, destinacao: e.target.value })}
               />
               <datalist id="destinos">
-                <option value="Reforço escolar" />
+                <option value="Oficinas e reforço" />
                 <option value="Famílias acolhidas" />
+                <option value="Inclusão digital" />
+                <option value="Música e cultura" />
+                <option value="Jovens Empreendedores" />
                 <option value="Apadrinhamento" />
-                <option value="Eventos" />
                 <option value="Kit vestuário" />
                 <option value="Geral" />
               </datalist>

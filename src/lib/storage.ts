@@ -66,6 +66,7 @@ export function isAuthenticated() {
 export function login(email: string, password: string) {
   // MVP demo credentials — any non-empty also accepted for presentation
   const ok =
+    (email.trim().toLowerCase() === 'admin@asa-condor.org.br' && password === 'asa2025') ||
     (email.trim().toLowerCase() === 'admin@ongasa.org.br' && password === 'asa2025') ||
     (email.trim().length > 3 && password.trim().length >= 4)
   if (ok) {
@@ -80,7 +81,7 @@ export function logout() {
 }
 
 export function currentUserEmail() {
-  return localStorage.getItem('asa_user_email') || 'admin@ongasa.org.br'
+  return localStorage.getItem('asa_user_email') || 'admin@asa-condor.org.br'
 }
 
 export function resetAllData() {

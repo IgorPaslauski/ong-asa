@@ -68,9 +68,9 @@ export default function Overview() {
     <div className="dash-page">
       <header className="dash-header">
         <div>
-          <p className="eyebrow">Operação · outubro/2026</p>
-          <h1>Dashboard ASA</h1>
-          <p>Visão executiva de doações, cadastros e ações em andamento.</p>
+          <p className="eyebrow">Instituto A.S.A. · Condor/RS · out/2026</p>
+          <h1>Dashboard A.S.A.</h1>
+          <p>Associação Semeando o Amanhã — doações, cadastros e oficinas.</p>
         </div>
         <div className="header-actions">
           <Link className="btn btn-ghost-dark btn-sm" to="/painel/doacoes">

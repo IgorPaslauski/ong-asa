@@ -6,7 +6,7 @@ import '../styles/dashboard.css'
 
 export default function Login() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('admin@ongasa.org.br')
+  const [email, setEmail] = useState('admin@asa-condor.org.br')
   const [password, setPassword] = useState('asa2025')
   const [error, setError] = useState('')
 
@@ -27,11 +27,11 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-card anim-in">
-        <div className="brand-mark">ASA</div>
-        <h1>Sistema operacional</h1>
-        <p className="muted">Dashboard, cadastros e prestação de contas da equipe.</p>
+        <div className="brand-mark">A.S.A.</div>
+        <h1>Sistema da associação</h1>
+        <p className="muted">Instituto A.S.A. — cadastros, doações e prestação de contas.</p>
         <div className="hint">
-          Demo: <strong>admin@ongasa.org.br</strong> / <strong>asa2025</strong>
+          Demo: <strong>admin@asa-condor.org.br</strong> / <strong>asa2025</strong>
           <br />
           Ou qualquer e-mail e senha com 4+ caracteres.
         </div>

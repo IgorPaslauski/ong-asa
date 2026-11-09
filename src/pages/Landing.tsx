@@ -9,7 +9,8 @@ import {
   PUBLIC_IMPACT,
   SUPPORT_NETWORK,
 } from '../data/impact'
-import { ORG, formatCurrency, formatDate } from '../data/mock'
+import { ORG, PUBLIC_NOTES } from '../data/org'
+import { formatCurrency, formatDate } from '../data/mock'
 import '../styles/landing.css'
 
 function compactMoney(value: number) {
@@ -29,13 +30,13 @@ export default function Landing() {
 
         <div className="container site-nav">
           <div className="brand">
-            <span className="brand-mark">ASA</span>
-            <span className="brand-sub">{ORG.fullName}</span>
+            <span className="brand-mark">{ORG.shortName}</span>
+            <span className="brand-sub">{ORG.legalName}</span>
           </div>
           <nav className="nav-links" aria-label="Principal">
+            <a href="#sobre">Sobre</a>
             <a href="#dados">Dados</a>
             <a href="#acoes">Ações</a>
-            <a href="#sobre">Sobre</a>
             <Link className="btn btn-ghost btn-sm" to="/sistema">
               Acessar sistema
             </Link>
@@ -43,29 +44,91 @@ export default function Landing() {
         </div>
 
         <div className="hero-content">
-          <h1 className="hero-brand anim-in">ASA</h1>
+          <p className="hero-kicker anim-in">Instituto A.S.A. · Condor/RS</p>
+          <h1 className="hero-brand anim-in">{ORG.shortName}</h1>
           <p className="hero-copy anim-in-delay">{ORG.tagline}</p>
           <div className="hero-actions anim-in-delay-2">
             <a className="btn btn-primary" href="#ajudar">
               Quero ajudar
             </a>
-            <a className="btn btn-ghost" href="#dados">
-              Ver impacto em números
+            <a className="btn btn-ghost" href="#sobre">
+              Conhecer a associação
             </a>
           </div>
         </div>
       </header>
+
+      <section className="section" id="sobre">
+        <div className="container split">
+          <div>
+            <p className="section-kicker">Quem somos</p>
+            <h2>{ORG.name} — {ORG.legalName}</h2>
+            <p className="section-lead">{ORG.about[0]}</p>
+            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
+              {ORG.about[1]}
+            </p>
+            <p className="section-lead" style={{ marginTop: '0.85rem' }}>
+              {ORG.cityContext}
+            </p>
+            <dl className="org-facts">
+              <div>
+                <dt>Fundação</dt>
+                <dd>{ORG.foundedLabel}</dd>
+              </div>
+              <div>
+                <dt>CNPJ</dt>
+                <dd>{ORG.cnpj}</dd>
+              </div>
+              <div>
+                <dt>Atendimento</dt>
+                <dd>
+                  {PUBLIC_NOTES.weeklyChildren} crianças/adolescentes por semana · {PUBLIC_NOTES.ageRange}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="split-media">
+            <img src="./images/about.jpg" alt="Crianças e educadores em atividade" />
+          </div>
+        </div>
+
+        <div className="container" style={{ marginTop: '2.5rem' }}>
+          <div className="mission-grid">
+            <article className="mission-card">
+              <h3>Missão</h3>
+              <p>{ORG.mission}</p>
+            </article>
+            <article className="mission-card">
+              <h3>Visão</h3>
+              <p>{ORG.vision}</p>
+            </article>
+            <article className="mission-card">
+              <h3>Princípio</h3>
+              <p>{ORG.principle}</p>
+            </article>
+          </div>
+
+          <div className="pillars" style={{ marginTop: '1.5rem' }}>
+            {ORG.pillars.map((p) => (
+              <article className="pillar" key={p.title}>
+                <h3>{p.title}</h3>
+                <p>{p.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="section data-strip" id="dados">
         <div className="container">
           <div className="section-head">
             <div>
               <p className="section-kicker">Transparência {PUBLIC_IMPACT.yearLabel}</p>
-              <h2>O impacto da ASA em números.</h2>
+              <h2>O impacto da A.S.A. em números.</h2>
             </div>
             <p className="section-lead">
-              Doações, acolhimento e ações em um só lugar — no espírito de gráficos
-              claros e leitura rápida, para qualquer pessoa acompanhar.
+              Indicadores para apresentação do MVP — calibrados à escala da associação em Condor.
+              No sistema, cadastros e doações alimentam a operação do dia a dia.
             </p>
           </div>
 
@@ -73,22 +136,24 @@ export default function Landing() {
             <article className="kpi-card">
               <span className="kpi-label">Doações no ano</span>
               <strong className="kpi-value">{compactMoney(PUBLIC_IMPACT.donationsYear)}</strong>
-              <span className="kpi-foot">+ {formatCurrency(PUBLIC_IMPACT.donationsMonth)} só em outubro</span>
+              <span className="kpi-foot">+ {formatCurrency(PUBLIC_IMPACT.donationsMonth)} em outubro</span>
             </article>
             <article className="kpi-card">
-              <span className="kpi-label">Crianças acompanhadas</span>
+              <span className="kpi-label">Crianças na rede</span>
               <strong className="kpi-value">{PUBLIC_IMPACT.childrenAccompanied}</strong>
-              <span className="kpi-foot">{PUBLIC_IMPACT.familiesHelped} famílias na rede</span>
+              <span className="kpi-foot">~{PUBLIC_IMPACT.weeklyAttendance}/semana nas oficinas</span>
             </article>
             <article className="kpi-card">
-              <span className="kpi-label">Ações realizadas</span>
+              <span className="kpi-label">Voluntariado</span>
+              <strong className="kpi-value">{PUBLIC_NOTES.volunteersCore + PUBLIC_NOTES.volunteersSupport}</strong>
+              <span className="kpi-foot">
+                {PUBLIC_NOTES.volunteersCore} efetivos · {PUBLIC_NOTES.volunteersSupport} em eventos
+              </span>
+            </article>
+            <article className="kpi-card">
+              <span className="kpi-label">Ações no ano</span>
               <strong className="kpi-value">{PUBLIC_IMPACT.actionsCompleted}</strong>
-              <span className="kpi-foot">{PUBLIC_IMPACT.hoursVolunteered.toLocaleString('pt-BR')} h de voluntariado</span>
-            </article>
-            <article className="kpi-card">
-              <span className="kpi-label">Cestas entregues</span>
-              <strong className="kpi-value">{PUBLIC_IMPACT.basketsDelivered}</strong>
-              <span className="kpi-foot">{PUBLIC_IMPACT.schoolKits} kits escolares</span>
+              <span className="kpi-foot">{PUBLIC_IMPACT.familiesHelped} famílias acompanhadas</span>
             </article>
           </div>
 
@@ -97,9 +162,9 @@ export default function Landing() {
               <header className="viz-head">
                 <div>
                   <h3>Doações mês a mês</h3>
-                  <p>Valor arrecadado e estimado em espécie (maio–outubro).</p>
+                  <p>Arrecadação e estimativa em espécie (maio–outubro).</p>
                 </div>
-                <span className="viz-tag">R$ atual</span>
+                <span className="viz-tag">R$ ilustrativo</span>
               </header>
               <ColumnChart
                 items={MONTHLY_DONATIONS.map((m) => ({ label: m.month, value: m.value }))}
@@ -111,7 +176,7 @@ export default function Landing() {
               <header className="viz-head">
                 <div>
                   <h3>Por tipo de doação</h3>
-                  <p>Quanto entrou e quantos lançamentos em cada categoria.</p>
+                  <p>Financeiro, alimentos, TI/material, roupas e serviços.</p>
                 </div>
               </header>
               <BarList
@@ -128,7 +193,7 @@ export default function Landing() {
               <header className="viz-head">
                 <div>
                   <h3>Para onde vai o recurso</h3>
-                  <p>Destinação das doações confirmadas em {PUBLIC_IMPACT.yearLabel}.</p>
+                  <p>Oficinas, famílias, digital, cultura e empreendedorismo.</p>
                 </div>
               </header>
               <BarList
@@ -144,8 +209,8 @@ export default function Landing() {
             <article className="viz-card">
               <header className="viz-head">
                 <div>
-                  <h3>Rede de apoio</h3>
-                  <p>Quem sustenta a operação no dia a dia.</p>
+                  <h3>Rede que sustenta a A.S.A.</h3>
+                  <p>Voluntários, doadores e parceiros do município e região.</p>
                 </div>
               </header>
               <BarList
@@ -158,15 +223,16 @@ export default function Landing() {
                 </div>
                 <div>
                   <strong>{PUBLIC_IMPACT.godparents}</strong>
-                  <span>padrinhos ativos</span>
+                  <span>padrinhos</span>
                 </div>
                 <div>
                   <strong>{PUBLIC_IMPACT.partners}</strong>
-                  <span>parceiros locais</span>
+                  <span>parceiros</span>
                 </div>
               </div>
             </article>
           </div>
+          <p className="source-note">{PUBLIC_NOTES.sourcesLabel}</p>
         </div>
       </section>
 
@@ -174,12 +240,12 @@ export default function Landing() {
         <div className="container">
           <div className="section-head">
             <div>
-              <p className="section-kicker">Ações recentes</p>
-              <h2>O que a ASA fez nos últimos meses.</h2>
+              <p className="section-kicker">O que fazemos</p>
+              <h2>Oficinas e ações que semeiam o amanhã.</h2>
             </div>
             <p className="section-lead">
-              Cada ação vira registro no sistema — com participantes, resultado e
-              rastreio de doações vinculadas.
+              Inclusão digital, reforço, música, dança, artesanato, assistência às famílias
+              e o Projeto Jovens Empreendedores — tudo com voluntários e parceiros.
             </p>
           </div>
 
@@ -200,8 +266,8 @@ export default function Landing() {
           <div className="viz-card map-card">
             <header className="viz-head">
               <div>
-                <h3>Crianças por território</h3>
-                <p>Distribuição aproximada do cadastro ativo e em acompanhamento.</p>
+                <h3>Atendimento no município</h3>
+                <p>A A.S.A. recebe crianças de todo Condor — centro, Olaria e interior.</p>
               </div>
             </header>
             <BarList
@@ -216,50 +282,19 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section" id="sobre">
-        <div className="container split">
-          <div>
-            <p className="section-kicker">Quem somos</p>
-            <h2>Uma asa que acolhe quem mais precisa.</h2>
-            <p className="section-lead">
-              A ONG ASA — {ORG.fullName} — nasceu em {ORG.founded} para oferecer apoio
-              concreto a crianças e famílias: reforço escolar, alimentação, escuta e
-              presença comunitária.
-            </p>
-            <div className="pillars tight">
-              <article className="pillar">
-                <h3>Educação</h3>
-                <p>Reforço, oficinas e acompanhamento escolar contínuo.</p>
-              </article>
-              <article className="pillar">
-                <h3>Acolhimento</h3>
-                <p>Escuta familiar e rede de proteção no território.</p>
-              </article>
-              <article className="pillar">
-                <h3>Assistência</h3>
-                <p>Cestas, kits e apoio material com rastreabilidade.</p>
-              </article>
-            </div>
-          </div>
-          <div className="split-media">
-            <img src="./images/about.jpg" alt="Crianças e educadores em atividade" />
-          </div>
-        </div>
-      </section>
-
       <section className="section cta-section" id="ajudar">
         <div className="container cta-panel">
           <div>
             <p className="section-kicker">Participe</p>
-            <h2>Doe, apadrinhe ou seja voluntário.</h2>
+            <h2>Doe, seja voluntário ou parceiro da A.S.A.</h2>
             <p className="section-lead">
-              Toda contribuição entra no painel da equipe — com relatórios claros
-              para prestar contas à comunidade.
+              A associação se mantém com doadores recorrentes, parcerias e voluntariado.
+              Cada contribuição ajuda a sustentar oficinas e o acolhimento em Condor.
             </p>
           </div>
           <div className="hero-actions">
-            <a className="btn btn-primary" href={`mailto:${ORG.email}`}>
-              Falar com a ASA
+            <a className="btn btn-primary" href={`tel:+5555991349705`}>
+              Ligar para a A.S.A.
             </a>
             <Link className="btn btn-ghost-dark" to="/sistema">
               Abrir painel demo
@@ -272,27 +307,37 @@ export default function Landing() {
         <div className="container">
           <div className="footer-grid">
             <div>
-              <div className="footer-brand">ASA</div>
-              <p>{ORG.fullName}</p>
+              <div className="footer-brand">{ORG.shortName}</div>
+              <p>{ORG.name}</p>
+              <p>{ORG.legalName}</p>
               <p style={{ marginTop: '0.75rem' }}>{ORG.tagline}</p>
+              <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                CNPJ {ORG.cnpj}
+              </p>
             </div>
             <div>
               <h4>Contato</h4>
-              <p>{ORG.email}</p>
               <p>{ORG.phone}</p>
-              <p>{ORG.address}</p>
+              <p>{ORG.phoneAlt}</p>
+              <p>
+                {ORG.address}
+                <br />
+                {ORG.city}/{ORG.state} · CEP {ORG.cep}
+              </p>
             </div>
             <div>
               <h4>Sistema</h4>
               <p>
                 <Link to="/sistema">Painel administrativo</Link>
               </p>
-              <p>Dados de demonstração para apresentação.</p>
+              <p>MVP com dados mockados para apresentação à associação.</p>
             </div>
           </div>
           <div className="footer-note">
-            <span>© {new Date().getFullYear()} ONG ASA — MVP de demonstração</span>
-            <span>Layout inspirado em leitura clara de dados públicos</span>
+            <span>
+              © {new Date().getFullYear()} {ORG.legalName} — Instituto A.S.A.
+            </span>
+            <span>Condor · Rio Grande do Sul</span>
           </div>
         </div>
       </footer>
