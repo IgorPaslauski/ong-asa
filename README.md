@@ -1,24 +1,22 @@
-# ONG ASA — MVP
+# Instituto A.S.A. — Associação Semeando o Amanhã
 
-Landing institucional + painel interno (cadastros e relatórios) com dados mockados.
-
-**ASA** = Ação Social e Acolhimento
+Landing institucional e painel interno para o Instituto A.S.A., em Condor/RS. O MVP traz dados de demonstração e persiste os cadastros no navegador (`localStorage`).
 
 ## O que inclui
 
-- Landing page apresentando a organização
-- Login demo do painel
+- Landing com a história da organização, indicadores e evolução anual
+- Números da landing calculados a partir dos cadastros do painel
+- Login de demonstração
 - Cadastro de crianças
 - Cadastro de quem ajuda (voluntários, doadores, padrinhos, parceiros)
 - Registro de doações
-- Relatórios com filtro de período, gráficos, exportação CSV e impressão/PDF
-- Persistência local no navegador (`localStorage`)
+- Relatórios com filtro de período, gráficos, exportação CSV e impressão
 
 ## Demo
 
 - Site: `/`
 - Sistema: `/#/sistema`
-- Usuário: `admin@ongasa.org.br`
+- Usuário: `admin@asa-condor.org.br`
 - Senha: `asa2025`
 
 ## Desenvolvimento
@@ -35,31 +33,6 @@ npm run build
 npm run preview
 ```
 
-A build usa `base: './'` e `HashRouter`, então funciona em qualquer caminho do GitHub Pages.
+A build usa `base: './'` e `HashRouter`, então funciona no caminho do GitHub Pages (`https://igorpaslauski.github.io/ong-asa/`).
 
-## Publicar no GitHub Pages
-
-1. Crie um repositório no GitHub (ex.: `ong-asa`)
-2. Envie o código:
-
-```bash
-git init
-git add .
-git commit -m "MVP ONG ASA"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/ong-asa.git
-git push -u origin main
-```
-
-3. No repositório: **Settings → Pages → Build and deployment**
-   - Source: **GitHub Actions**
-4. O workflow em `.github/workflows/deploy.yml` publica a pasta `dist` automaticamente a cada push na `main`.
-
-Ou, manualmente:
-
-```bash
-npm run build
-# Faça upload da pasta dist / use action peaceiris/actions-gh-pages
-```
-
-Site ficará em: `https://SEU_USUARIO.github.io/ong-asa/`
+O workflow em `.github/workflows/deploy.yml` publica a pasta `dist` a cada push na `main`. Em **Settings → Pages → Build and deployment**, a origem precisa ser **GitHub Actions**.
