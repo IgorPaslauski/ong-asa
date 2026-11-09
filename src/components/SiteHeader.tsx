@@ -35,7 +35,7 @@ export default function SiteHeader() {
       },
       { rootMargin: '-40% 0px -55% 0px' },
     )
-    for (const { id } of [...SECTIONS, { id: 'ajudar' }]) {
+    for (const { id } of [...SECTIONS, { id: 'ajudar' }, { id: 'voluntario' }]) {
       const node = document.getElementById(id)
       if (node) observer.observe(node)
     }

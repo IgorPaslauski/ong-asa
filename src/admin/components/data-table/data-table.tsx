@@ -20,9 +20,6 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
   Columns3Icon,
-  DownloadIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
   InboxIcon,
   MoreHorizontalIcon,
   SearchIcon,
@@ -50,7 +47,8 @@ import {
   DateRangeControl,
   SelectFilterControl,
 } from '@/admin/components/filters/filter-controls'
-import { exportCsv, exportPdf, slugify } from '@/admin/lib/export'
+import { ExportMenu, EXPORT_DONE } from '@/admin/components/reports/export-menu'
+import { runExport, slugify, type ExportKind, type Orientation } from '@/admin/lib/export'
 import { formatNumber, normalize, todayISO } from '@/admin/lib/format'
 import { usePersistentState, useMediaQuery, useSessionState, useDebounced } from '@/admin/lib/hooks'
 import { cn } from '@/admin/lib/utils'
@@ -232,7 +230,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
     setPageIndex(0)
   }
 
-  function runExport(kind: 'csv' | 'pdf') {
+  async function runExportAction(kind: ExportKind, orientation: Orientation | undefined) {
     if (!exportConfig) return
     const exportRows = table.getPrePaginationRowModel().rows.map((r) => r.original)
     if (!exportRows.length) {
@@ -244,15 +242,15 @@ export function DataTable<T>(props: DataTableProps<T>) {
       subtitle: exportConfig.subtitle,
       period: exportPeriod,
       filters: describeFilters(filters, filterState, query),
+      generatedAt: new Date(),
       notes: exportConfig.notes,
     }
     const name = `${slugify(exportConfig.filename)}-${todayISO()}`
     try {
-      if (kind === 'csv') exportCsv(`${name}.csv`, exportRows, exportConfig.columns, scope)
-      else exportPdf({ filename: `${name}.pdf`, scope, columns: exportConfig.columns, rows: exportRows })
-      toast.success(`${kind.toUpperCase()} gerado com ${formatNumber(exportRows.length)} ${exportRows.length === 1 ? noun[0] : noun[1]}.`)
+      await runExport(kind, { csvFilename: `${name}.csv`, filename: `${name}.pdf`, scope, columns: exportConfig.columns, rows: exportRows, orientation })
+      toast.success(`${EXPORT_DONE[kind]} ${formatNumber(exportRows.length)} ${exportRows.length === 1 ? noun[0] : noun[1]}.`)
     } catch (e) {
-      toast.error('Não foi possível gerar a exportação.', { description: e instanceof Error ? e.message : undefined })
+      toast.error('Não foi possível gerar o documento.', { description: e instanceof Error ? e.message : undefined })
     }
   }
 
@@ -343,27 +341,7 @@ export function DataTable<T>(props: DataTableProps<T>) {
             </DropdownMenu>
           ) : null}
           {exportConfig ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <DownloadIcon />
-                  Exportar
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  {formatNumber(totalFiltered)} {totalFiltered === 1 ? noun[0] : noun[1]} (filtros atuais)
-                </DropdownMenuLabel>
-                <DropdownMenuItem onSelect={() => runExport('csv')}>
-                  <FileSpreadsheetIcon />
-                  CSV (Excel)
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => runExport('pdf')}>
-                  <FileTextIcon />
-                  PDF
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ExportMenu size="sm" variant="outline" scopeLabel={`${formatNumber(totalFiltered)} ${totalFiltered === 1 ? noun[0] : noun[1]} (filtros atuais)`} onRun={runExportAction} />
           ) : null}
           {primaryAction}
         </div>

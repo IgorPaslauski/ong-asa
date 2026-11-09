@@ -12,11 +12,11 @@ import {
 
 const KEYS = {
   events: 'asa_events_v1',
+  volunteerApps: 'asa_volunteer_apps_v1',
   children: 'asa_children_v3',
   helpers: 'asa_helpers_v3',
   donations: 'asa_donations_v3',
   activities: 'asa_activities_v3',
-  session: 'asa_session_v1',
 } as const
 
 export const STORAGE_KEYS = KEYS
@@ -75,31 +75,6 @@ export function getEvents(): EventItem[] {
 
 export function setEvents(items: EventItem[]) {
   write(KEYS.events, items)
-}
-
-export function isAuthenticated() {
-  return localStorage.getItem(KEYS.session) === '1'
-}
-
-export function login(email: string, password: string) {
-  // MVP demo credentials — any non-empty also accepted for presentation
-  const ok =
-    (email.trim().toLowerCase() === 'admin@asa-condor.org.br' && password === 'asa2025') ||
-    (email.trim().toLowerCase() === 'admin@ongasa.org.br' && password === 'asa2025') ||
-    (email.trim().length > 3 && password.trim().length >= 4)
-  if (ok) {
-    localStorage.setItem(KEYS.session, '1')
-    localStorage.setItem('asa_user_email', email.trim())
-  }
-  return ok
-}
-
-export function logout() {
-  localStorage.removeItem(KEYS.session)
-}
-
-export function currentUserEmail() {
-  return localStorage.getItem('asa_user_email') || 'admin@asa-condor.org.br'
 }
 
 export function resetAllData() {

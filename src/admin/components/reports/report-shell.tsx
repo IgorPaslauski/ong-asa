@@ -1,18 +1,19 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { CalendarIcon, DownloadIcon, FileSpreadsheetIcon, FileTextIcon, InfoIcon, XIcon } from 'lucide-react'
+import { CalendarIcon, InfoIcon, XIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/admin/components/ui/badge'
 import { Button } from '@/admin/components/ui/button'
 import { Calendar } from '@/admin/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/admin/components/ui/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/admin/components/ui/dropdown-menu'
+import { ExportMenu, EXPORT_DONE } from '@/admin/components/reports/export-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/admin/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/admin/components/ui/select'
 import { PageHeader } from '@/admin/components/layout/page-header'
 import { buildPeriodPresets, describePeriod, type Period } from '@/admin/data/domain'
-import { exportCsv, exportPdf, slugify, type ExportColumn, type PdfSummaryItem } from '@/admin/lib/export'
-import { formatDateBR, formatDateTimeBR, todayISO } from '@/admin/lib/format'
+import { runExport, slugify, type ExportColumn, type ExportKind, type Orientation, type PdfSummaryItem } from '@/admin/lib/export'
+import { formatDateBR, formatPrintStamp, todayISO } from '@/admin/lib/format'
 import { useSessionState } from '@/admin/lib/hooks'
+import { useSessionUser } from '@/lib/auth'
 import type { DateRange } from 'react-day-picker'
 
 /* ------------------------------ Período do relatório ----------------------- */
@@ -127,40 +128,20 @@ export interface ReportExportConfig<T> {
   notes?: string[]
 }
 
-function ReportExportMenu<T>({ title, description, periodText, filtersApplied, generatedAt, config }: { title: string; description: string; periodText: string; filtersApplied: string[]; generatedAt: Date; config: ReportExportConfig<T> }) {
-  const scope = { title, subtitle: description, period: periodText, filters: filtersApplied, generatedAt, notes: config.notes }
+function ReportExportMenu<T>({ title, description, periodText, filtersApplied, generatedAt, printedBy, config }: { title: string; description: string; periodText: string; filtersApplied: string[]; generatedAt: Date; printedBy?: string; config: ReportExportConfig<T> }) {
   const name = `${slugify(config.filename)}-${todayISO(generatedAt)}`
   const disabled = config.rows.length === 0
-  function run(kind: 'csv' | 'pdf') {
+  async function run(kind: ExportKind, orientation: Orientation | undefined) {
+    // Cada emissão leva a data/hora de agora, não a da abertura da tela.
+    const scope = { title, subtitle: description, period: periodText, filters: filtersApplied, generatedAt: new Date(), printedBy, notes: config.notes }
     try {
-      if (kind === 'csv') exportCsv(`${name}.csv`, config.rows, config.columns, scope)
-      else exportPdf({ filename: `${name}.pdf`, scope, columns: config.columns, rows: config.rows, summary: config.summary })
-      toast.success(`${kind.toUpperCase()} gerado.`, { description: `${config.rows.length} linhas · ${periodText}` })
+      await runExport(kind, { csvFilename: `${name}.csv`, filename: `${name}.pdf`, scope, columns: config.columns, rows: config.rows, summary: config.summary, orientation })
+      toast.success(EXPORT_DONE[kind], { description: `${config.rows.length} linhas · ${periodText}` })
     } catch (e) {
-      toast.error('Não foi possível gerar a exportação.', { description: e instanceof Error ? e.message : undefined })
+      toast.error('Não foi possível gerar o documento.', { description: e instanceof Error ? e.message : undefined })
     }
   }
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button disabled={disabled} title={disabled ? 'Sem dados no período para exportar' : undefined}>
-          <DownloadIcon />
-          Exportar
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel>Escopo: {config.rows.length} linhas, {periodText}</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => run('pdf')}>
-          <FileTextIcon />
-          PDF (para impressão)
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => run('csv')}>
-          <FileSpreadsheetIcon />
-          CSV (Excel)
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+  return <ExportMenu scopeLabel={`Escopo: ${config.rows.length} linhas, ${periodText}`} disabled={disabled} disabledReason="Sem dados no período para exportar" onRun={run} />
 }
 
 /**
@@ -192,25 +173,30 @@ export function ReportShell<T>({
   exportConfig: ReportExportConfig<T>
 }) {
   const generatedAt = useMemo(() => new Date(), [])
+  const printedBy = useSessionUser()?.nome
   return (
     <div data-report={slug}>
       <PageHeader
         title={title}
         description={description}
         trail={[]}
-        actions={<ReportExportMenu title={title} description={description} periodText={periodText} filtersApplied={filtersApplied} generatedAt={generatedAt} config={exportConfig} />}
+        actions={<ReportExportMenu title={title} description={description} periodText={periodText} filtersApplied={filtersApplied} generatedAt={generatedAt} printedBy={printedBy} config={exportConfig} />}
       />
 
       <Card className="mb-4 gap-0">
         <div className="flex flex-wrap items-center gap-2 border-b p-3">{controls}</div>
-        <dl className="grid gap-x-6 gap-y-2 p-3 text-[13px] sm:grid-cols-3">
+        <dl className="grid gap-x-6 gap-y-2 p-3 text-[13px] sm:grid-cols-4">
           <div>
             <dt className="text-xs text-muted-foreground">Período analisado</dt>
             <dd className="font-medium tabular">{periodText}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">Gerado em</dt>
-            <dd className="font-medium tabular">{formatDateTimeBR(generatedAt)}</dd>
+            <dd className="font-medium tabular">{formatPrintStamp(generatedAt)}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">Emitido por</dt>
+            <dd className="font-medium">{printedBy ?? '—'}</dd>
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">Filtros aplicados</dt>

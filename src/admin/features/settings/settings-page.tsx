@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/adm
 import { ConfirmDialog } from '@/admin/components/feedback/confirm-dialog'
 import { PageHeader } from '@/admin/components/layout/page-header'
 import { useActivities, useChildren, useDonations, useEvents, useHelpers } from '@/admin/data/store'
+import { COLLECTIONS } from '@/admin/data/collections'
 import { downloadBlob } from '@/admin/lib/export'
 import { formatNumber, todayISO } from '@/admin/lib/format'
 import { getActivities, getChildren, getDonations, getEvents, getHelpers, resetAllData } from '@/lib/storage'
@@ -46,6 +47,7 @@ export default function SettingsPage() {
       donations: getDonations(),
       activities: getActivities(),
       events: getEvents(),
+      modulos: Object.fromEntries(COLLECTIONS.map((c) => [c.key, c.read()])),
     }
     downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), `asa-backup-${todayISO()}.json`)
     toast.success('Backup gerado.', { description: 'O arquivo contém dados pessoais. Guarde em local seguro.' })

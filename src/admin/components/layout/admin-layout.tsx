@@ -16,9 +16,9 @@ import { Toaster } from '@/admin/components/ui/sonner'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/admin/components/ui/tooltip'
 import { usePersistentState, useMediaQuery } from '@/admin/lib/hooks'
 import { cn } from '@/admin/lib/utils'
-import { currentUserEmail, isAuthenticated, logout } from '@/lib/storage'
+import { HOME_BY_ROLE, ROLE_NAME, can, logout, useSessionUser, type AppUser, type Permission } from '@/lib/auth'
 import logoUrl from '@/assets/logo-asa.png'
-import { NAV } from './nav'
+import { findNav, navFor } from './nav'
 
 function Brand({ collapsed }: { collapsed?: boolean }) {
   return (
@@ -34,10 +34,10 @@ function Brand({ collapsed }: { collapsed?: boolean }) {
   )
 }
 
-function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
+function NavList({ collapsed, onNavigate, user }: { collapsed?: boolean; onNavigate?: () => void; user: AppUser }) {
   return (
     <nav aria-label="Navegação principal" className="flex-1 space-y-4 overflow-y-auto px-2 py-3">
-      {NAV.map((group) => (
+      {navFor(user.perfil).map((group) => (
         <div key={group.label}>
           {collapsed ? <div className="mx-2 mb-1.5 h-px bg-border" aria-hidden="true" /> : <p className="px-2 pb-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{group.label}</p>}
           <ul className="space-y-0.5">
@@ -79,9 +79,9 @@ function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: 
   )
 }
 
-function UserMenu({ collapsed, onLogout }: { collapsed?: boolean; onLogout: () => void }) {
-  const email = currentUserEmail()
-  const initials = email.slice(0, 2).toUpperCase()
+function UserMenu({ collapsed, onLogout, user }: { collapsed?: boolean; onLogout: () => void; user: AppUser }) {
+  const email = user.email
+  const initials = user.nome.slice(0, 2).toUpperCase()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -93,8 +93,8 @@ function UserMenu({ collapsed, onLogout }: { collapsed?: boolean; onLogout: () =
           {collapsed ? <span className="sr-only">Menu do usuário: {email}</span> : (
             <>
               <span className="min-w-0 flex-1 leading-tight">
-                <span className="block truncate text-[13px] font-medium">{email}</span>
-                <span className="block text-xs text-muted-foreground">Administrador</span>
+                <span className="block truncate text-[13px] font-medium">{user.nome}</span>
+                <span className="block truncate text-xs text-muted-foreground">{ROLE_NAME[user.perfil]}</span>
               </span>
               <ChevronsUpDownIcon className="size-4 text-muted-foreground" aria-hidden="true" />
             </>
@@ -125,6 +125,7 @@ export default function AdminLayout() {
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [collapsed, setCollapsed] = usePersistentState<boolean>('sidebar_collapsed', false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const user = useSessionUser()
 
   useEffect(() => {
     document.body.setAttribute('data-admin', '')
@@ -132,7 +133,11 @@ export default function AdminLayout() {
   }, [])
   useEffect(() => setMobileOpen(false), [location.pathname])
 
-  if (!isAuthenticated()) return <Navigate to="/sistema" replace />
+  if (!user) return <Navigate to="/sistema" replace />
+
+  // Bloqueia rotas fora do perfil (ex.: voluntário digitando /painel/doacoes na barra de endereço).
+  const current = findNav(location.pathname)
+  if (current && !can(user.perfil, current.item.perm as Permission)) return <Navigate to={HOME_BY_ROLE[user.perfil]} replace />
 
   function handleLogout() {
     logout()
@@ -155,7 +160,7 @@ export default function AdminLayout() {
             <div className={cn('flex h-14 items-center border-b px-3', isCollapsed && 'justify-center px-0')}>
               <Brand collapsed={isCollapsed} />
             </div>
-            <NavList collapsed={isCollapsed} />
+            <NavList collapsed={isCollapsed} user={user} />
             <div className="space-y-1 border-t p-2">
               <Button
                 variant="ghost"
@@ -168,7 +173,7 @@ export default function AdminLayout() {
                 {isCollapsed ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
                 {isCollapsed ? null : 'Recolher menu'}
               </Button>
-              <UserMenu collapsed={isCollapsed} onLogout={handleLogout} />
+              <UserMenu collapsed={isCollapsed} onLogout={handleLogout} user={user} />
             </div>
           </aside>
         ) : (
@@ -179,9 +184,9 @@ export default function AdminLayout() {
               <div className="flex h-14 items-center border-b px-3">
                 <Brand />
               </div>
-              <NavList onNavigate={() => setMobileOpen(false)} />
+              <NavList onNavigate={() => setMobileOpen(false)} user={user} />
               <div className="border-t p-2">
-                <UserMenu onLogout={handleLogout} />
+                <UserMenu onLogout={handleLogout} user={user} />
               </div>
             </SheetContent>
           </Sheet>

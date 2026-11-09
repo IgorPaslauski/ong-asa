@@ -18,10 +18,12 @@ import {
 } from '@/data/mock'
 import {
   STORAGE_KEYS,
+  getActivities,
   getChildren,
   getDonations,
   getEvents,
   getHelpers,
+  setActivities,
   setChildren,
   setDonations,
   setEvents,
@@ -80,7 +82,8 @@ export function normalizeDonation(r: Rec): Donation {
   }
 }
 export function normalizeActivity(r: Rec): Activity {
-  return { id: str(r.id), titulo: str(r.titulo), data: str(r.data), tipo: str(r.tipo), participantes: num(r.participantes) }
+  const presentes = Array.isArray(r.presentes) ? r.presentes.filter((x): x is string => typeof x === 'string') : undefined
+  return { id: str(r.id), titulo: str(r.titulo), data: str(r.data), tipo: str(r.tipo), participantes: num(r.participantes), ...(presentes ? { presentes } : {}) }
 }
 
 export function normalizeEvent(r: Rec): EventItem {
@@ -137,6 +140,28 @@ export const eventsRepo = {
 export type ChildInput = Omit<Child, 'id'>
 export type HelperInput = Omit<Helper, 'id'>
 export type DonationInput = Omit<Donation, 'id'>
+
+export type ActivityInput = Omit<Activity, 'id'>
+export const activitiesRepo = {
+  save(input: ActivityInput, id?: string): Activity {
+    const list = getActivities()
+    if (id) {
+      const next = { ...(list.find((a) => a.id === id) as Activity), ...input, id }
+      setActivities(list.map((a) => (a.id === id ? next : a)))
+      return next
+    }
+    const created: Activity = { id: uid('a'), ...input }
+    setActivities([created, ...list])
+    return created
+  },
+  /** Registra a presença; o total de participantes passa a ser o número de presentes. */
+  setAttendance(id: string, presentes: string[]) {
+    setActivities(getActivities().map((a) => (a.id === id ? { ...a, presentes, participantes: presentes.length } : a)))
+  },
+  remove(id: string) {
+    setActivities(getActivities().filter((a) => a.id !== id))
+  },
+}
 
 export const childrenRepo = {
   save(input: ChildInput, id?: string): Child {

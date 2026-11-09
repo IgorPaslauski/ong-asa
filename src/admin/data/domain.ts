@@ -216,3 +216,31 @@ export function childrenEnteredByYear(list: Child[]): { year: string; count: num
   for (const c of list) map.set(c.dataEntrada.slice(0, 4), (map.get(c.dataEntrada.slice(0, 4)) ?? 0) + 1)
   return [...map.entries()].map(([year, count]) => ({ year, count })).sort((a, b) => a.year.localeCompare(b.year))
 }
+
+export interface ChildAttendance {
+  child: Child
+  present: number
+  /** Atividades com lista de presença realizadas desde que a criança entrou. */
+  possible: number
+}
+
+/**
+ * Frequência por criança, só sobre atividades com lista de presença.
+ * "Possíveis" = atividades com lista na data da entrada da criança ou depois dela.
+ * Ordena da menor para a maior frequência (e crianças sem atividades possíveis por último).
+ */
+export function attendanceByChild(activities: Activity[], children: Child[]): ChildAttendance[] {
+  const listed = activities.filter((a) => a.presentes)
+  return children
+    .filter((c) => c.status !== 'concluido')
+    .map((child) => {
+      const eligible = listed.filter((a) => !child.dataEntrada || a.data >= child.dataEntrada)
+      const present = eligible.filter((a) => a.presentes!.includes(child.id)).length
+      return { child, present, possible: eligible.length }
+    })
+    .sort((a, b) => {
+      const ra = a.possible ? a.present / a.possible : 2
+      const rb = b.possible ? b.present / b.possible : 2
+      return ra - rb || a.child.nome.localeCompare(b.child.nome, 'pt-BR')
+    })
+}

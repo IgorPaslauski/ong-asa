@@ -32,6 +32,12 @@ describe('exportação CSV', () => {
     expect(csv).toContain('"Filtros";"Nenhum"')
   })
 
+  it('registra data/hora e usuário que emitiu', () => {
+    const csv = toCsv([], [{ header: 'A', value: () => '' }], { title: 'T', generatedAt: new Date(2026, 10, 9, 14, 32), printedBy: 'Maria' })
+    expect(csv).toContain('"Gerado em";"09/11/2026 às 14:32"')
+    expect(csv).toContain('"Emitido por";"Maria"')
+  })
+
   it('gera slugs sem acentos', () => {
     expect(slugify('Relatório de Doações 2026')).toBe('relatorio-de-doacoes-2026')
   })

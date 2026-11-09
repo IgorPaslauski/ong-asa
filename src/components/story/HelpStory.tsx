@@ -15,6 +15,7 @@ const PATHS = [
     text: 'Reforço, música, dança, artesanato ou ajuda na organização. Algumas horas por semana já fazem diferença.',
     cta: 'Quero ser voluntário',
     message: 'Olá! Quero ser voluntário(a) na A.S.A.',
+    href: '#voluntario',
   },
   {
     title: 'Tornar-se parceiro',
@@ -77,10 +78,14 @@ export default function HelpStory() {
             >
               <h3>{path.title}</h3>
               <p>{path.text}</p>
-              <a href={whatsapp(path.message)} target="_blank" rel="noreferrer">
-                {path.cta}
-                <span className="visually-hidden"> — abre o WhatsApp</span>
-              </a>
+              {'href' in path ? (
+                <a href={path.href}>{path.cta}</a>
+              ) : (
+                <a href={whatsapp(path.message)} target="_blank" rel="noreferrer">
+                  {path.cta}
+                  <span className="visually-hidden"> — abre o WhatsApp</span>
+                </a>
+              )}
             </article>
           ))}
         </div>

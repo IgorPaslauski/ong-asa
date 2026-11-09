@@ -23,6 +23,8 @@ import {
   summarizeDonations,
   type Granularity,
 } from '@/admin/data/domain'
+import { useApplications } from '@/lib/volunteers'
+import { isLowStock, stockBalance, stockItems, stockMoves } from '@/admin/data/modules'
 import { useActivities, useChildren, useDonations, useHelpers } from '@/admin/data/store'
 import { formatBRL, formatBRLCompact, formatDateBR, formatMonthLong, formatMonthShort, formatNumber } from '@/admin/lib/format'
 import { usePersistentState } from '@/admin/lib/hooks'
@@ -55,6 +57,9 @@ export default function DashboardPage() {
   const helpers = useHelpers()
   const donations = useDonations()
   const activities = useActivities()
+  const applications = useApplications()
+  const stock = stockItems.useAll()
+  const moves = stockMoves.useAll()
 
   const presets = useMemo(() => buildPeriodPresets(), [])
   const [periodId, setPeriodId] = usePersistentState<string>('dash_period', '12m')
@@ -118,6 +123,15 @@ export default function DashboardPage() {
   }, [donations, activities, children, helpers])
 
   const attention = childCounts.acompanhamento ?? 0
+  const lowStock = useMemo(() => stock.filter((i) => isLowStock(i, stockBalance(i.id, moves))), [stock, moves])
+  const newApps = useMemo(() => applications.filter((a) => a.status === 'nova').length, [applications])
+  // Doações pendentes há mais de 7 dias merecem atenção (dinheiro parado sem confirmação).
+  const stale = useMemo(() => {
+    const limit = new Date()
+    limit.setDate(limit.getDate() - 7)
+    const iso = limit.toISOString().slice(0, 10)
+    return allPending.filter((d) => d.data <= iso).length
+  }, [allPending])
 
   return (
     <div>
@@ -307,7 +321,7 @@ export default function DashboardPage() {
               <CardDescription>Registros que aguardam uma decisão da equipe.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              {allPending.length === 0 && attention === 0 ? (
+              {allPending.length === 0 && attention === 0 && newApps === 0 && lowStock.length === 0 ? (
                 <p className="rounded-md border border-dashed p-4 text-center text-[13px] text-muted-foreground">Nenhuma pendência. Tudo em dia.</p>
               ) : null}
               {allPending.length > 0 ? (
@@ -320,7 +334,26 @@ export default function DashboardPage() {
                     <span className="block text-sm font-medium">{allPending.length} {allPending.length === 1 ? 'doação aguardando' : 'doações aguardando'} confirmação</span>
                     <span className="block text-xs text-muted-foreground">
                       {formatBRL(allPending.filter(isFinancial).reduce((s, d) => s + d.valor, 0))} em dinheiro ainda não confirmado
+                      {stale > 0 ? ` · ${stale} há mais de 7 dias` : ''}
                     </span>
+                  </span>
+                  <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                </Link>
+              ) : null}
+              {lowStock.length > 0 ? (
+                <Link to="/painel/estoque" className="flex items-center justify-between gap-3 rounded-md border p-3 transition-colors hover:bg-accent">
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium">{lowStock.length} {lowStock.length === 1 ? 'item com estoque baixo' : 'itens com estoque baixo'}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{lowStock.slice(0, 3).map((i) => i.nome).join(', ')}{lowStock.length > 3 ? ' e outros' : ''}</span>
+                  </span>
+                  <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                </Link>
+              ) : null}
+              {newApps > 0 ? (
+                <Link to="/painel/voluntarios" className="flex items-center justify-between gap-3 rounded-md border p-3 transition-colors hover:bg-accent">
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium">{newApps} {newApps === 1 ? 'candidatura nova' : 'candidaturas novas'} de voluntariado</span>
+                    <span className="block text-xs text-muted-foreground">Ainda sem contato da equipe</span>
                   </span>
                   <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                 </Link>

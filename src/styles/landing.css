@@ -1022,3 +1022,265 @@
   background: #fff;
   margin: 0 0 var(--space-3);
 }
+
+/* ---------- Seja voluntário (formulário) ---------- */
+.volunteer {
+  background: var(--bg-deep);
+}
+
+.volunteer-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+}
+
+.volunteer-points {
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+  color: var(--ink-soft);
+}
+
+.volunteer-points li {
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.volunteer-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.7rem;
+  height: 2px;
+  background: var(--terracotta-ink);
+}
+
+.volunteer-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.volunteer-card form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.vf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.vf-field {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vf-field label,
+.vf-field legend {
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0;
+}
+
+.vf-hint {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.875em;
+}
+
+.vf-field input[type='text'],
+.vf-field input[type='tel'],
+.vf-field textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid #8b8f99;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+  min-height: 2.75rem;
+}
+
+.vf-field textarea {
+  resize: vertical;
+}
+
+.vf-field input:focus-visible,
+.vf-field textarea:focus-visible {
+  outline: 3px solid var(--soft-green);
+  outline-offset: 1px;
+  border-color: var(--brand);
+}
+
+.vf-field input[aria-invalid='true'] {
+  border-color: #b3261e;
+}
+
+.vf-error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.vf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.vf-chip {
+  position: relative;
+  display: inline-flex;
+}
+
+.vf-chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.vf-chip span {
+  border: 1.5px solid var(--rule);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+
+.vf-chip:hover span {
+  border-color: var(--brand);
+}
+
+.vf-chip input:checked + span {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.vf-chip input:focus-visible + span {
+  outline: 3px solid var(--soft-green);
+  outline-offset: 2px;
+}
+
+.vf-field .vf-consent {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.vf-consent input {
+  margin-top: 0.25rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  accent-color: var(--brand);
+}
+
+.vf-submit {
+  justify-self: start;
+  cursor: pointer;
+  border: 0;
+  padding: 0.85rem 1.6rem;
+}
+
+.volunteer-done h3 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  color: var(--brand-deep);
+}
+
+.volunteer-done p {
+  margin: 0 0 var(--space-3);
+  color: var(--ink-soft);
+}
+
+.volunteer-done .volunteer-hint {
+  color: var(--muted);
+}
+
+.volunteer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.volunteer-link {
+  background: none;
+  border: 0;
+  padding: 0.5rem 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .volunteer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .vf-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Campanhas de arrecadação ---------- */
+.campaigns { padding-block: clamp(3.5rem, 8vw, 6rem); }
+.campaign-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+.campaign-card {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding: var(--space-5);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  border-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+.campaign-card h3 { margin: 0; }
+.campaign-card p { margin: 0; }
+.campaign-bar {
+  height: 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  overflow: hidden;
+}
+.campaign-bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.campaign-figures { font-variant-numeric: tabular-nums; }
+.campaign-card .btn { justify-self: start; }

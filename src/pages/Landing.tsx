@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { BarList, ColumnChart } from '../components/Charts'
 import Reveal from '../components/Reveal'
 import SiteHeader from '../components/SiteHeader'
+import CampaignsSection from '../components/CampaignsSection'
+import VolunteerSection from '../components/VolunteerSection'
 import ActivitiesStory from '../components/story/ActivitiesStory'
 import AboutStory from '../components/story/AboutStory'
 import HelpStory from '../components/story/HelpStory'
@@ -319,6 +321,8 @@ export default function Landing() {
           </div>
         </section>
 
+        <CampaignsSection />
+
         {/* 4. Como participar */}
         <section className="section join" id="participar" aria-labelledby="participar-title">
           <div className="container join-grid">
@@ -357,6 +361,9 @@ export default function Landing() {
 
         {/* 7. Como ajudar */}
         <HelpStory />
+
+        {/* 8. Candidatura de voluntário */}
+        <VolunteerSection />
       </main>
 
       <footer className="site-footer on-dark">

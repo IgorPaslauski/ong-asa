@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ColumnDef } from '@tanstack/react-table'
-import { BanIcon, CheckCircle2Icon, EyeIcon, InfoIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { BanIcon, CheckCircle2Icon, EyeIcon, FileTextIcon, InfoIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Alert, AlertDescription } from '@/admin/components/ui/alert'
 import { Button } from '@/admin/components/ui/button'
+import { canIssueReceipt, downloadReceipt } from '@/admin/lib/receipt'
 import { Sheet, SheetBody, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/admin/components/ui/sheet'
 import { Kpi } from '@/admin/components/charts/kpi'
 import { DataTable, SortableHeader } from '@/admin/components/data-table/data-table'
@@ -63,6 +64,11 @@ export default function DonationsPage() {
   })
   const form = useForm<DonationFormValues>({ resolver: zodResolver(donationSchema), defaultValues: defaults(), mode: 'onTouched' })
   const tipoWatch = useWatch({ control: form.control, name: 'tipo' })
+
+  function sendReceipt(d: Donation) {
+    downloadReceipt(d)
+    toast.success('Recibo gerado.', { description: d.doadorNome })
+  }
 
   function openCreate() {
     setEditing(null)
@@ -189,6 +195,7 @@ export default function DonationsPage() {
     () =>
       (d: Donation): RowAction<Donation>[] => [
         { id: 'ver', label: 'Ver detalhes', icon: <EyeIcon />, onSelect: setDetail },
+        { id: 'recibo', label: 'Gerar recibo (PDF)', icon: <FileTextIcon />, hidden: !canIssueReceipt(d), onSelect: sendReceipt },
         { id: 'editar', label: 'Editar doação', icon: <PencilIcon />, onSelect: openEdit },
         { id: 'confirmar', label: 'Confirmar recebimento', icon: <CheckCircle2Icon />, hidden: d.status === 'confirmada', onSelect: (x) => setStatus(x, 'confirmada') },
         { id: 'cancelar', label: 'Cancelar doação', icon: <BanIcon />, hidden: d.status === 'cancelada', onSelect: (x) => setStatus(x, 'cancelada') },

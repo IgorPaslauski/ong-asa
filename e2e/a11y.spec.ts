@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-const ROUTES = ['visao-geral', 'criancas', 'pessoas', 'doacoes', 'eventos', 'relatorios', 'relatorios/doacoes', 'relatorios/atendimentos', 'relatorios/atividades', 'relatorios/rede-de-apoio', 'relatorios/institucional', 'configuracoes']
+const ROUTES = ['visao-geral', 'criancas', 'pessoas', 'doacoes', 'eventos', 'relatorios', 'relatorios/doacoes', 'relatorios/atendimentos', 'relatorios/atividades', 'relatorios/rede-de-apoio', 'relatorios/institucional', 'relatorios/prestacao-de-contas', 'configuracoes', 'usuarios', 'atividades', 'familias', 'escala', 'estoque', 'despesas', 'campanhas', 'metas', 'comunicacao']
 
 test.describe('acessibilidade (axe, WCAG 2.x A/AA)', () => {
   test.beforeEach(async ({ page }) => {

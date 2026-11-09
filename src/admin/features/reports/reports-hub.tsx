@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import { ArrowRightIcon, BabyIcon, CalendarCheck2Icon, HandHeartIcon, HeartHandshakeIcon, LandmarkIcon } from 'lucide-react'
+import { ArrowRightIcon, BabyIcon, CalendarCheck2Icon, HandHeartIcon, HeartHandshakeIcon, LandmarkIcon, ReceiptIcon } from 'lucide-react'
 import { Card } from '@/admin/components/ui/card'
 import { PageHeader } from '@/admin/components/layout/page-header'
 
 const REPORTS = [
   { to: 'doacoes', title: 'Doações', icon: HeartHandshakeIcon, text: 'Entradas por período, tipo e destinação. Separa dinheiro recebido de estimativas de bens e serviços.', formats: 'PDF · CSV' },
+  { to: 'prestacao-de-contas', title: 'Prestação de contas', icon: ReceiptIcon, text: 'Dinheiro recebido, despesas pagas e saldo do período, com despesas por categoria.', formats: 'PDF · CSV' },
   { to: 'atendimentos', title: 'Atendimentos', icon: BabyIcon, text: 'Crianças e adolescentes por situação, faixa etária e bairro. Agregado, sem dados pessoais.', formats: 'PDF · CSV' },
   { to: 'atividades', title: 'Atividades', icon: CalendarCheck2Icon, text: 'Ações e oficinas realizadas, com participações por ano e por área.', formats: 'PDF · CSV' },
   { to: 'rede-de-apoio', title: 'Rede de apoio', icon: HandHeartIcon, text: 'Doadores, voluntários, padrinhos e parceiros e quanto cada um contribuiu no período.', formats: 'PDF · CSV' },

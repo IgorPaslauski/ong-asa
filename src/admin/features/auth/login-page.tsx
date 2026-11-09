@@ -7,7 +7,7 @@ import { Button } from '@/admin/components/ui/button'
 import { Card } from '@/admin/components/ui/card'
 import { Input } from '@/admin/components/ui/input'
 import { Label } from '@/admin/components/ui/label'
-import { isAuthenticated, login } from '@/lib/storage'
+import { DEMO_ACCOUNTS, DEMO_PASSWORD, HOME_BY_ROLE, ROLE_NAME, getSessionUser, login } from '@/lib/auth'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -22,19 +22,20 @@ export default function LoginPage() {
     return () => document.body.removeAttribute('data-admin')
   }, [])
 
-  if (isAuthenticated()) return <Navigate to="/painel/visao-geral" replace />
+  const logged = getSessionUser()
+  if (logged) return <Navigate to={HOME_BY_ROLE[logged.perfil]} replace />
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
     if (busy) return
     setBusy(true)
-    const ok = login(email, password)
-    if (!ok) {
-      setError('Não foi possível entrar. Confira o e-mail e a senha (mínimo de 4 caracteres).')
+    const result = login(email, password)
+    if (!result.ok) {
+      setError(result.reason === 'inactive' ? 'Esta conta está desativada. Fale com a administração do Instituto.' : 'Não foi possível entrar. Confira o e-mail e a senha.')
       setBusy(false)
       return
     }
-    navigate('/painel/visao-geral')
+    navigate(HOME_BY_ROLE[result.user.perfil])
   }
 
   return (
@@ -50,7 +51,23 @@ export default function LoginPage() {
         <Card className="gap-4 p-5">
           <Alert variant="info">
             <AlertDescription>
-              Demonstração: <strong>admin@asa-condor.org.br</strong> / <strong>asa2025</strong>. Os dados ficam só neste navegador.
+              <span className="block">Demonstração: escolha um perfil para testar. Senha de todos: <strong>{DEMO_PASSWORD}</strong>. Os dados ficam só neste navegador.</span>
+              <span className="mt-2 flex flex-wrap gap-1.5">
+                {DEMO_ACCOUNTS.map((a) => (
+                  <button
+                    key={a.email}
+                    type="button"
+                    className="rounded-md border bg-background px-2 py-1 text-xs font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+                    onClick={() => {
+                      setEmail(a.email)
+                      setPassword(DEMO_PASSWORD)
+                      setError('')
+                    }}
+                  >
+                    {ROLE_NAME[a.perfil]}
+                  </button>
+                ))}
+              </span>
             </AlertDescription>
           </Alert>
           <form onSubmit={onSubmit} className="grid gap-4" noValidate>

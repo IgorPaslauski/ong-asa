@@ -65,6 +65,13 @@ export function formatDateTimeBR(date: Date): string {
   return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 }
 
+/** "09/11/2026 às 14:32" — carimbo de impressão dos relatórios. */
+export function formatPrintStamp(date: Date): string {
+  const d = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  const t = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  return `${d} às ${t}`
+}
+
 export function todayISO(now = new Date()): string {
   const y = now.getFullYear()
   const m = String(now.getMonth() + 1).padStart(2, '0')

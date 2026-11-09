@@ -59,6 +59,8 @@ export interface Activity {
   data: string
   tipo: string
   participantes: number
+  /** Ids das crianças presentes (quando a presença foi registrada). */
+  presentes?: string[]
 }
 
 export { ORG } from './org'

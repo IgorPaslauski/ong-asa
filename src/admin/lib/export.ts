@@ -1,8 +1,10 @@
 /**
- * Exportações (CSV e PDF). Sempre recebem os dados JÁ filtrados e ordenados
- * pela tela e descrevem o escopo (período e filtros) no próprio arquivo.
+ * Exportações (CSV, PDF e impressão). Sempre recebem os dados JÁ filtrados e
+ * ordenados pela tela e descrevem o escopo (período, filtros, emissão e usuário)
+ * no próprio arquivo. PDF e impressão usam o mesmo documento (papel timbrado).
  */
-import { formatDateTimeBR } from './format'
+import { getSessionUser } from '@/lib/auth'
+import { formatPrintStamp } from './format'
 
 export type ExportCell = string | number | null | undefined
 
@@ -18,9 +20,24 @@ export interface ExportScope {
   subtitle?: string
   period?: string
   filters?: string[]
+  /** Data e hora da emissão (padrão: agora). */
   generatedAt?: Date
+  /** Nome de quem emitiu (padrão: usuário logado). */
+  printedBy?: string
   /** Linhas de observação exibidas no fim (metodologia, dados demonstrativos...). */
   notes?: string[]
+}
+
+export type Orientation = 'portrait' | 'landscape'
+export type ExportKind = 'print' | 'pdf' | 'csv'
+
+/** Completa emissão e usuário sem sobrescrever o que a tela já informou. */
+export function withIssuer(scope: ExportScope): ExportScope & { generatedAt: Date } {
+  return {
+    ...scope,
+    generatedAt: scope.generatedAt ?? new Date(),
+    printedBy: scope.printedBy ?? getSessionUser()?.nome,
+  }
 }
 
 export function downloadBlob(blob: Blob, filename: string) {
@@ -49,7 +66,8 @@ export function toCsv<T>(rows: T[], columns: ExportColumn<T>[], scope?: ExportSc
     lines.push(esc(scope.title))
     if (scope.period) lines.push(`${esc('Período')};${esc(scope.period)}`)
     lines.push(`${esc('Filtros')};${esc(scope.filters?.length ? scope.filters.join(' | ') : 'Nenhum')}`)
-    lines.push(`${esc('Gerado em')};${esc(formatDateTimeBR(scope.generatedAt ?? new Date()))}`)
+    lines.push(`${esc('Gerado em')};${esc(formatPrintStamp(scope.generatedAt ?? new Date()))}`)
+    if (scope.printedBy) lines.push(`${esc('Emitido por')};${esc(scope.printedBy)}`)
     lines.push(`${esc('Registros')};${esc(rows.length)}`)
     lines.push('')
   }
@@ -60,7 +78,7 @@ export function toCsv<T>(rows: T[], columns: ExportColumn<T>[], scope?: ExportSc
 }
 
 export function exportCsv<T>(filename: string, rows: T[], columns: ExportColumn<T>[], scope?: ExportScope) {
-  downloadBlob(new Blob([toCsv(rows, columns, scope)], { type: 'text/csv;charset=utf-8;' }), filename)
+  downloadBlob(new Blob([toCsv(rows, columns, scope && withIssuer(scope))], { type: 'text/csv;charset=utf-8;' }), filename)
 }
 
 export interface PdfSummaryItem {
@@ -75,13 +93,48 @@ export interface PdfOptions<T> {
   columns: ExportColumn<T>[]
   rows: T[]
   summary?: PdfSummaryItem[]
-  orientation?: 'portrait' | 'landscape'
+  /** Sem valor, o PDF escolhe pelo número de colunas (mais de 6 → paisagem). */
+  orientation?: Orientation
 }
 
 /** Gera e baixa o PDF. O gerador (jsPDF) é carregado sob demanda para não pesar no painel. */
 export async function exportPdf<T>(opts: PdfOptions<T>): Promise<void> {
   const { buildPdf } = await import('./export-pdf')
-  buildPdf(opts).save(opts.filename)
+  await (await import('./pdf-brand')).preloadLogo()
+  buildPdf({ ...opts, scope: withIssuer(opts.scope) }).save(opts.filename)
+}
+
+/** Abre a caixa de impressão do navegador com o mesmo PDF (orientação já definida no documento). */
+export async function printPdf<T>(opts: PdfOptions<T>): Promise<void> {
+  const { buildPdf } = await import('./export-pdf')
+  await (await import('./pdf-brand')).preloadLogo()
+  const blob = buildPdf({ ...opts, scope: withIssuer(opts.scope) }).output('blob')
+  const url = URL.createObjectURL(blob)
+  const frame = document.createElement('iframe')
+  frame.setAttribute('aria-hidden', 'true')
+  frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden'
+  frame.src = url
+  frame.onload = () => {
+    try {
+      frame.contentWindow?.focus()
+      frame.contentWindow?.print()
+    } catch {
+      // Navegador bloqueou a impressão embutida: abre o PDF em outra aba.
+      window.open(url, '_blank')
+    }
+  }
+  document.body.appendChild(frame)
+  setTimeout(() => {
+    frame.remove()
+    URL.revokeObjectURL(url)
+  }, 5 * 60_000)
+}
+
+/** Ponto único de despacho usado por relatórios e listagens. */
+export async function runExport<T>(kind: ExportKind, opts: PdfOptions<T> & { csvFilename: string }): Promise<void> {
+  if (kind === 'csv') exportCsv(opts.csvFilename, opts.rows, opts.columns, opts.scope)
+  else if (kind === 'pdf') await exportPdf(opts)
+  else await printPdf(opts)
 }
 
 export function slugify(text: string): string {

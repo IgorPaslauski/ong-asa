@@ -17,6 +17,7 @@ import { SwitchField, TextField, TextareaField } from '@/admin/components/forms/
 import { FormSection, FormSheet } from '@/admin/components/forms/form-sheet'
 import { PageHeader } from '@/admin/components/layout/page-header'
 import { eventsRepo, useEvents } from '@/admin/data/store'
+import { can, useSessionUser } from '@/lib/auth'
 import type { ExportColumn } from '@/admin/lib/export'
 import { formatDateBR, todayISO } from '@/admin/lib/format'
 import type { EventItem } from '@/data/mock'
@@ -60,10 +61,12 @@ export default function EventsPage() {
   const [editing, setEditing] = useState<EventItem | null>(null)
   const [toDelete, setToDelete] = useState<EventItem | null>(null)
   const today = todayISO()
+  const canEdit = can(useSessionUser()?.perfil, 'eventos.editar')
 
   const form = useForm<EventForm>({ resolver: zodResolver(eventSchema), defaultValues: emptyValues(), mode: 'onTouched' })
 
-  const rows = useMemo<Row[]>(() => events.map((e) => ({ ...e, situacao: situacaoOf(e, today) })), [events, today])
+  // Quem só consulta (voluntário) não vê rascunhos.
+  const rows = useMemo<Row[]>(() => events.filter((e) => canEdit || e.publicado).map((e) => ({ ...e, situacao: situacaoOf(e, today) })), [events, today, canEdit])
 
   function openCreate() {
     setEditing(null)
@@ -77,7 +80,7 @@ export default function EventsPage() {
   }
   useEffect(() => {
     if (params.get('novo') === '1') {
-      openCreate()
+      if (canEdit) openCreate()
       setParams({}, { replace: true })
     }
     // eslint-disable-next-line
@@ -165,7 +168,7 @@ export default function EventsPage() {
 
   const rowActions = useMemo(
     () =>
-      (e: Row): RowAction<Row>[] => [
+      (e: Row): RowAction<Row>[] => !canEdit ? [] : [
         { id: 'editar', label: 'Editar evento', icon: <PencilIcon />, onSelect: openEdit },
         {
           id: 'toggle',
@@ -180,7 +183,7 @@ export default function EventsPage() {
         { id: 'remover', label: 'Remover evento', icon: <Trash2Icon />, destructive: true, onSelect: setToDelete },
       ],
     // eslint-disable-next-line
-    [],
+    [canEdit],
   )
 
   const exportColumns: ExportColumn<Row>[] = [
@@ -195,12 +198,14 @@ export default function EventsPage() {
     <div>
       <PageHeader
         title="Eventos"
-        description="Agenda de eventos futuros. Os publicados aparecem automaticamente na página inicial do site."
+        description={canEdit ? 'Agenda de eventos futuros. Os publicados aparecem automaticamente na página inicial do site.' : 'Agenda de eventos do Instituto. Somente consulta.'}
         actions={
-          <Button onClick={openCreate}>
-            <PlusIcon />
-            Novo evento
-          </Button>
+          canEdit ? (
+            <Button onClick={openCreate}>
+              <PlusIcon />
+              Novo evento
+            </Button>
+          ) : undefined
         }
       />
 
@@ -220,13 +225,13 @@ export default function EventsPage() {
         noun={['evento', 'eventos']}
         empty={{
           title: 'Nenhum evento cadastrado ainda',
-          description: 'Cadastre os próximos eventos do Instituto. Os publicados aparecem na página inicial do site.',
-          action: (
+          description: canEdit ? 'Cadastre os próximos eventos do Instituto. Os publicados aparecem na página inicial do site.' : 'Quando a equipe publicar eventos, eles aparecem aqui.',
+          action: canEdit ? (
             <Button size="sm" onClick={openCreate}>
               <PlusIcon />
               Novo evento
             </Button>
-          ),
+          ) : undefined,
         }}
         exportConfig={{ filename: 'eventos', title: 'Eventos', subtitle: 'Agenda de eventos do Instituto A.S.A.', columns: exportColumns }}
         exportPeriod="Todo o histórico"
