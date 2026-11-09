@@ -37,7 +37,7 @@
   inset: 0;
   background:
     linear-gradient(180deg, rgba(6, 16, 42, 0.6) 0%, rgba(6, 16, 42, 0) 22%, rgba(6, 16, 42, 0) 45%, rgba(6, 16, 42, 0.78) 100%),
-    linear-gradient(90deg, rgba(6, 16, 42, 0.86) 0%, rgba(6, 16, 42, 0.62) 34%, rgba(6, 16, 42, 0.12) 62%, rgba(6, 16, 42, 0) 100%);
+    linear-gradient(90deg, var(--brand-deep) 0%, var(--brand-deep) 24%, rgba(6, 16, 42, 0.5) 31%, rgba(6, 16, 42, 0) 38%, rgba(6, 16, 42, 0) 100%);
 }
 
 .hero-lede {

@@ -72,7 +72,7 @@ export default function HeroScene({ enhanced }: { enhanced: boolean }) {
             <img
               ref={photo}
               className="hero-photo"
-              src="./images/hero.webp"
+              src="./images/hero-grupo.webp"
               alt=""
               fetchPriority="high"
               decoding="async"
