@@ -199,6 +199,31 @@
   font-weight: 500;
 }
 
+.year-breakdown {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.year-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.88rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.45rem;
+}
+
+.year-breakdown strong {
+  color: var(--brand);
+}
+
+.year-breakdown span {
+  color: var(--muted);
+}
+
 .panel-link {
   display: inline-block;
   margin-top: 0.9rem;

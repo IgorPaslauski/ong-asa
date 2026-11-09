@@ -7,7 +7,9 @@ import {
   formatCurrency,
   formatDate,
 } from '../../data/mock'
-import { getChildren, getDonations, getHelpers, resetAllData } from '../../lib/storage'
+import { ColumnChart } from '../../components/Charts'
+import { buildYearEvolution } from '../../lib/publicStats'
+import { getActivities, getChildren, getDonations, getHelpers, resetAllData } from '../../lib/storage'
 
 export default function ReportsPage() {
   const [from, setFrom] = useState('2026-08-01')
@@ -17,6 +19,16 @@ export default function ReportsPage() {
   const children = getChildren()
   const helpers = getHelpers()
   const donations = getDonations()
+  const activities = getActivities()
+  const evolution = useMemo(
+    () => buildYearEvolution(children, donations, activities),
+    [children, donations, activities],
+  )
+
+  function applyYear(value: string) {
+    setFrom(`${value}-01-01`)
+    setTo(`${value}-12-31`)
+  }
 
   const report = useMemo(() => {
     const inRange = donations.filter((d) => d.data >= from && d.data <= to)
@@ -109,6 +121,22 @@ export default function ReportsPage() {
         </div>
       </header>
 
+      <div className="chip-row">
+        {evolution.map((point) => {
+          const active = from === `${point.year}-01-01` && to === `${point.year}-12-31`
+          return (
+            <button
+              key={point.year}
+              type="button"
+              className={`chip${active ? ' is-on' : ''}`}
+              onClick={() => applyYear(point.year)}
+            >
+              {point.year}
+            </button>
+          )
+        })}
+      </div>
+
       <div className="toolbar">
         <div className="field">
           <label htmlFor="from">De</label>
@@ -119,6 +147,33 @@ export default function ReportsPage() {
           <input id="to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
       </div>
+
+      <section className="panel elev" style={{ marginBottom: '1.25rem' }}>
+        <div className="panel-title">
+          <div>
+            <h2>Evolução anual</h2>
+            <p className="panel-sub">Doações confirmadas, entradas de crianças e ações em cada ano.</p>
+          </div>
+        </div>
+        <ColumnChart
+          items={evolution.map((point) => ({ label: point.year, value: point.donations }))}
+          formatValue={(value) =>
+            value >= 1000 ? `${(value / 1000).toFixed(1).replace('.', ',')}` : String(value)
+          }
+        />
+        <ul className="year-breakdown">
+          {evolution.map((point) => (
+            <li key={point.year}>
+              <strong>{point.year}</strong>
+              <span>
+                {formatCurrency(point.donations)} · {point.children}{' '}
+                {point.children === 1 ? 'entrada' : 'entradas'} · {point.actions}{' '}
+                {point.actions === 1 ? 'ação' : 'ações'}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="grid-4" style={{ marginBottom: '1.25rem' }}>
         <div className="stat">

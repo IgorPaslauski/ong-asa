@@ -10,10 +10,10 @@ import {
 } from '../data/mock'
 
 const KEYS = {
-  children: 'asa_children_v2',
-  helpers: 'asa_helpers_v2',
-  donations: 'asa_donations_v2',
-  activities: 'asa_activities_v2',
+  children: 'asa_children_v3',
+  helpers: 'asa_helpers_v3',
+  donations: 'asa_donations_v3',
+  activities: 'asa_activities_v3',
   session: 'asa_session_v1',
 } as const
 

@@ -42,8 +42,18 @@ export interface LandingKpi {
   source: StatSource
 }
 
+export interface YearPoint {
+  year: string
+  donations: number
+  children: number
+  actions: number
+}
+
 export interface LandingPublicModel {
   yearLabel: string
+  years: string[]
+  selectedYear: string
+  evolution: YearPoint[]
   kpis: LandingKpi[]
   monthly: NamedValue[]
   byType: NamedValue[]
@@ -179,49 +189,84 @@ function buildByArea(children: Child[]): NamedValue[] {
     .sort((a, b) => b.value - a.value)
 }
 
-/** Agrega o que a LP precisa a partir do armazenamento do sistema. */
-export function buildLandingPublicModel(
-  children = getChildren(),
-  helpers = getHelpers(),
-  donations = getDonations(),
-  activities = getActivities(),
-): LandingPublicModel {
-  const okDonations = confirmed(donations)
-  const totalValue = okDonations.reduce((s, d) => s + d.valor, 0)
-  const activeChildren = children.filter((c) => c.status === 'ativo').length
-  const followChildren = children.filter((c) => c.status === 'acompanhamento').length
-  const activeHelpers = helpers.filter((h) => h.ativo).length
-  const thisMonthKey = '2026-10'
-  const thisMonthValue = okDonations
-    .filter((d) => d.data.startsWith(thisMonthKey))
-    .reduce((s, d) => s + d.valor, 0)
+export function buildYearEvolution(
+  children: Child[],
+  donations: Donation[],
+  activities: Activity[],
+): YearPoint[] {
+  const years = new Set<string>()
+  for (const row of donations) years.add(row.data.slice(0, 4))
+  for (const row of children) years.add(row.dataEntrada.slice(0, 4))
+  for (const row of activities) years.add(row.data.slice(0, 4))
 
-  const monthly = buildMonthly(donations)
-  const byType = buildByType(donations)
-  const byDestination = buildByDestination(donations)
+  return [...years]
+    .filter((year) => /^\d{4}$/.test(year))
+    .sort()
+    .map((year) => ({
+      year,
+      donations: confirmed(donations)
+        .filter((d) => d.data.startsWith(year))
+        .reduce((sum, d) => sum + d.valor, 0),
+      children: children.filter((c) => c.dataEntrada.startsWith(year)).length,
+      actions: activities.filter((a) => a.data.startsWith(year)).length,
+    }))
+}
+
+/** Agrega o que a LP precisa a partir do armazenamento do sistema. */
+export function buildLandingPublicModel(year: string | 'all' = 'all'): LandingPublicModel {
+  const children = getChildren()
+  const helpers = getHelpers()
+  const donations = getDonations()
+  const activities = getActivities()
+  const evolution = buildYearEvolution(children, donations, activities)
+  const years = evolution.map((point) => point.year)
+  const selectedYear = year !== 'all' && years.includes(year) ? year : 'all'
+
+  const scopedDonations =
+    selectedYear === 'all' ? donations : donations.filter((d) => d.data.startsWith(selectedYear))
+  const scopedActivities =
+    selectedYear === 'all' ? activities : activities.filter((a) => a.data.startsWith(selectedYear))
+  const scopedChildren =
+    selectedYear === 'all'
+      ? children
+      : children.filter((c) => c.dataEntrada.startsWith(selectedYear))
+
+  const okDonations = confirmed(scopedDonations)
+  const totalValue = okDonations.reduce((s, d) => s + d.valor, 0)
+  const activeChildren = scopedChildren.filter((c) => c.status === 'ativo').length
+  const followChildren = scopedChildren.filter((c) => c.status === 'acompanhamento').length
+  const activeHelpers = helpers.filter((h) => h.ativo).length
+  const latestMonth = [...okDonations].sort((a, b) => b.data.localeCompare(a.data))[0]?.data.slice(0, 7)
+  const latestMonthValue = latestMonth
+    ? okDonations.filter((d) => d.data.startsWith(latestMonth)).reduce((s, d) => s + d.valor, 0)
+    : 0
+
+  const monthly = buildMonthly(scopedDonations)
+  const byType = buildByType(scopedDonations)
+  const byDestination = buildByDestination(scopedDonations)
   const support = buildSupport(helpers)
-  const byArea = buildByArea(children)
+  const byArea = buildByArea(selectedYear === 'all' ? children : scopedChildren)
 
   const kpis: LandingKpi[] = [
     {
       key: 'donations',
-      label: 'Doações no sistema',
+      label: selectedYear === 'all' ? 'Doações no período' : `Doações em ${selectedYear}`,
       display: compactMoney(totalValue || PUBLIC_IMPACT.donationsYear),
       foot:
         totalValue > 0
-          ? `${okDonations.length} confirmadas · ${compactMoney(thisMonthValue)} em out`
-          : `Referência editorial · ${compactMoney(PUBLIC_IMPACT.donationsMonth)} em out`,
+          ? `${okDonations.length} confirmadas · ${compactMoney(latestMonthValue)} no último mês`
+          : `Referência editorial · ${compactMoney(PUBLIC_IMPACT.donationsMonth)}`,
       source: totalValue > 0 ? 'system' : 'editorial',
     },
     {
       key: 'children',
-      label: 'Crianças cadastradas',
-      display: String(children.length || PUBLIC_IMPACT.childrenAccompanied),
+      label: selectedYear === 'all' ? 'Crianças cadastradas' : `Entradas em ${selectedYear}`,
+      display: String(scopedChildren.length || PUBLIC_IMPACT.childrenAccompanied),
       foot:
-        children.length > 0
+        scopedChildren.length > 0
           ? `${activeChildren} ativas · ${followChildren} em acompanhamento`
           : `~${PUBLIC_IMPACT.weeklyAttendance}/semana nas oficinas`,
-      source: children.length > 0 ? 'system' : 'editorial',
+      source: scopedChildren.length > 0 ? 'system' : 'editorial',
     },
     {
       key: 'helpers',
@@ -235,26 +280,29 @@ export function buildLandingPublicModel(
     },
     {
       key: 'actions',
-      label: 'Ações registradas',
-      display: String(activities.length || PUBLIC_IMPACT.actionsCompleted),
+      label: selectedYear === 'all' ? 'Ações registradas' : `Ações em ${selectedYear}`,
+      display: String(scopedActivities.length || PUBLIC_IMPACT.actionsCompleted),
       foot:
-        activities.length > 0
-          ? `${activities.reduce((s, a) => s + a.participantes, 0)} participações somadas`
+        scopedActivities.length > 0
+          ? `${scopedActivities.reduce((s, a) => s + a.participantes, 0)} participações somadas`
           : `${PUBLIC_IMPACT.familiesHelped} famílias acompanhadas`,
-      source: activities.length > 0 ? 'system' : 'editorial',
+      source: scopedActivities.length > 0 ? 'system' : 'editorial',
     },
   ]
 
   const actionRows =
-    activities.length > 0
-      ? [...activities]
+    scopedActivities.length > 0
+      ? [...scopedActivities]
           .sort((a, b) => b.data.localeCompare(a.data))
           .slice(0, 6)
           .map((a) => ({ ...a, source: 'system' as const }))
       : []
 
   return {
-    yearLabel: PUBLIC_IMPACT.yearLabel,
+    yearLabel: selectedYear === 'all' ? `${years[0] ?? ''}–${years.at(-1) ?? ''}` : selectedYear,
+    years,
+    selectedYear,
+    evolution,
     kpis,
     monthly,
     byType,
@@ -263,14 +311,16 @@ export function buildLandingPublicModel(
     byArea,
     actions: actionRows,
     live: {
-      childrenTotal: children.length,
+      childrenTotal: scopedChildren.length,
       childrenActive: activeChildren,
       helpersActive: activeHelpers,
       donationsConfirmed: okDonations.length,
       donationsTotalValue: totalValue,
-      activitiesCount: activities.length,
+      activitiesCount: scopedActivities.length,
     },
     sourcesNote:
-      'Parte dos números vem ao vivo do sistema (cadastros e doações). O restante é contexto institucional da A.S.A.',
+      selectedYear === 'all'
+        ? 'Evolução anual e totais saem do sistema. Escolha um ano para ver só aquele período.'
+        : `Recorte de ${selectedYear}. A série anual continua com todos os anos cadastrados.`,
   }
 }
